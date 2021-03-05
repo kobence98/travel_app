@@ -1,0 +1,57 @@
+name: travel_app
+description: A new Flutter project.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  like_button: ^1.0.1
+  fluttertoast: ^7.1.8
+  image_picker: ^0.6.0
+  file_picker: ^1.4.0
+  location: ^2.5.4
+  gpx: ^1.1.1
+  google_maps_flutter: ^2.0.0
+  vector_math: ^2.0.8
+
+  cupertino_icons: ^1.0.1
+
+  firebase_core: ^1.0.0
+  firebase_database: ^6.0.0
+  firebase_auth: ^1.0.0
+  firebase_storage: ^8.0.0
+  cloud_firestore: ^1.0.0
+  cached_network_image: ^2.5.0
+dependency_overrides:
+  http: ^0.12.0+2
+  firebase_auth_web: ^1.0.0
+  http_parser: ^4.0.0
+  firebase_auth_platform_interface: ^4.0.0
+  plugin_platform_interface: ^2.0.0
+  archive: ^2.0.0
+  flutter_cache_manager: ^2.1.0
+  crypto: ^2.0.0
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+flutter:
+  assets:
+    - assets/menu_cover.jpg
+    - assets/main_cover.gif
+    - assets/registration_cover.gif
+    - assets/forget_pass_cover.gif
+    - assets/loading.gif
+    - assets/change_pass_cover.gif
+
+  uses-material-design: true

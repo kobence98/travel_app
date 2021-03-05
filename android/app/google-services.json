@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "673615622754",
+    "firebase_url": "https://travel-best-places-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "travel-best-places",
+    "storage_bucket": "travel-best-places.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:673615622754:android:818c604643b13e3276173b",
+        "android_client_info": {
+          "package_name": "hu.ubul_studio.travel_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "673615622754-s2qni10qkdq2r2ln709oadbqu3p32v2t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUbdhH00MKhkvwxKMv0xQ6I8jgjpgBEM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "673615622754-s2qni10qkdq2r2ln709oadbqu3p32v2t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
