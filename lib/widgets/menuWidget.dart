@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:travel_app/widgets/auth/loginWidget.dart';
 
 import 'addPlaceWidget.dart';
 import 'changePassWidget.dart';
 import 'mainWidget.dart';
+import 'ownPlacesWidget.dart';
 
 class MenuWidget extends StatefulWidget {
   @override
@@ -16,10 +18,24 @@ class _MenuWidgetState extends State<MenuWidget> {
   double radiusSliderValue;
   double lengthSliderValue;
   double timeSliderValue;
+  TextEditingController nameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    if(placesList.isEmpty){
+      Fluttertoast.showToast(
+          msg: "Nem található egyetlen hely sem a körzetedben, állíts a filtereken!",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      if(notAnyPlaces){
+        notAnyPlaces = false;
+      }
+    }
   }
 
   @override
@@ -48,9 +64,40 @@ class _MenuWidgetState extends State<MenuWidget> {
           onTap: addPlace,
         ),
         ListTile(
+          leading: Icon(Icons.edit_location_rounded),
+          title: Text('Saját helyek kezelése'),
+          onTap: ownPlaces,
+        ),
+        ListTile(
           leading: Icon(Icons.security),
           title: Text('Jelszó megváltoztatása'),
           onTap: onPassChange,
+        ),
+        ListTile(
+          leading: Icon(Icons.search),
+          title: Row(
+            children: [
+              Flexible(
+                child: Text('Hely keresése:'),
+                flex: 4,
+              ),
+              Flexible(
+                child: TextField(
+                  style: TextStyle(color: Colors.black),
+                  controller: nameController,
+                  cursorColor: Colors.black,
+                ),
+                flex: 5,
+              ),
+              Flexible(
+                child: IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: onSearchPress,
+                ),
+                flex: 1,
+              )
+            ],
+          ),
         ),
         ListTile(
           leading: Icon(Icons.radio_button_checked),
@@ -199,10 +246,30 @@ class _MenuWidgetState extends State<MenuWidget> {
     });
   }
 
+  void ownPlaces() {
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
+      return OwnPlacesWidget();
+    }));
+  }
+
   void onPassChange() {
     Navigator.of(context)
         .push(MaterialPageRoute<void>(builder: (BuildContext context) {
       return ChangePassWidget();
     }));
+  }
+
+  void onSearchPress() {
+    mainWidget.setState(() {
+      searchByName = true;
+      name = nameController.text;
+    });
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
   }
 }

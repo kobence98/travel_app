@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:travel_app/main.dart';
 import 'package:travel_app/widgets/auth/loginWidget.dart';
+import 'package:travel_app/widgets/mainWidget.dart';
 import 'package:vector_math/vector_math.dart';
 
 import '../entities/place.dart';
@@ -25,12 +26,18 @@ Future<List<Place>> getPlaces() async {
   if (dataSnapshot.value != null) {
     dataSnapshot.value.forEach((key, value) {
       Place place = createPlace(value);
-      if ((radius == null
-          || distance(place.xCoordinate, currentLocation.latitude,
-              place.yCoordinate, currentLocation.longitude)/1000 <= radius)
-          && (time == null
-          || time > (place.hours * 60 + place.minutes))
-          && (length == null || place.length < length.toDouble())) {
+      if (searchByName) {
+        if (place.name.toLowerCase().contains(name.toLowerCase())) {
+          place.setId(databaseReference.child('places/' + key));
+          places.add(place);
+        }
+      } else if ((radius == null ||
+              distance(place.xCoordinate, currentLocation.latitude,
+                          place.yCoordinate, currentLocation.longitude) /
+                      1000 <=
+                  radius) &&
+          (time == null || time > (place.hours * 60 + place.minutes)) &&
+          (length == null || place.length < length.toDouble())) {
         place.setId(databaseReference.child('places/' + key));
         places.add(place);
       }
@@ -53,4 +60,19 @@ double distance(double lat1, double lat2, double lon1, double lon2) {
   double distance = R * c * 1000;
 
   return distance;
+}
+
+Future<List<Place>> getOwnPlaces() async {
+  DataSnapshot dataSnapshot = await databaseReference.child('places/').once();
+  List<Place> places = [];
+  if (dataSnapshot.value != null) {
+    dataSnapshot.value.forEach((key, value) {
+      Place place = createPlace(value);
+      if(place.creatorUId == loggedInUser.uid){
+        place.setId(databaseReference.child('places/' + key));
+        places.add(place);
+      }
+    });
+  }
+  return places;
 }

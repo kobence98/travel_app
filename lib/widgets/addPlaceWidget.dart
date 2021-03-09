@@ -167,7 +167,7 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
   Future<void> addPicture() async {
     File _image = await ImagePicker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 70,
+      imageQuality: 0,
     );
 
     setState(() {

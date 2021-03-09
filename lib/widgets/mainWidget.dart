@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_app/api/placesController.dart';
@@ -10,6 +12,9 @@ import 'onePictureWidget.dart';
 bool likeRefresh;
 var mainWidget;
 bool changeSearchSettings;
+String name;
+bool searchByName;
+bool notAnyPlaces;
 
 class MainWidget extends StatefulWidget {
   @override
@@ -26,6 +31,8 @@ class _MainWidgetState extends State<MainWidget> {
     likeRefresh = false;
     mainWidget = this;
     changeSearchSettings = false;
+    searchByName = false;
+    notAnyPlaces = false;
   }
 
   @override
@@ -33,23 +40,27 @@ class _MainWidgetState extends State<MainWidget> {
     _pageControllerA = new PageController(initialPage: 0);
     _pageControllerB = new PageController(initialPage: 1);
     if (!likeRefresh) {
-      if (!changeSearchSettings) {
+      if (!changeSearchSettings && !notAnyPlaces) {
         placesList = null;
-      }
-      else{
+      } else {
         placesList.clear();
       }
       getPlaces().then((places) {
         if (places.isNotEmpty) {
           placesList = places;
-          if(bestPlaces)
-            placesList.sort((a, b) => b.likeNumber().compareTo(a.likeNumber()));
-          if (allLiked)
-            placesList.removeWhere(
-                (place) => !place.usersLiked.contains(loggedInUser.uid));
+          if (searchByName) {
+            searchByName = false;
+          } else {
+            if (bestPlaces)
+              placesList
+                  .sort((a, b) => b.likeNumber().compareTo(a.likeNumber()));
+            if (allLiked)
+              placesList.removeWhere(
+                  (place) => !place.usersLiked.contains(loggedInUser.uid));
+          }
           placesList.forEach((place) {
             place.setPictures().whenComplete(() {
-              if (place == placesList.last) {
+              if (placesList.isEmpty || place == placesList.last) {
                 setState(() {
                   likeRefresh = true;
                 });
@@ -57,12 +68,18 @@ class _MainWidgetState extends State<MainWidget> {
             });
           });
         }
+        else{
+          setState(() {
+            notAnyPlaces = true;
+            placesList = [];
+          });
+        }
       });
     } else {
       likeRefresh = false;
     }
     return Scaffold(
-      body: placesList == null
+      body: placesList == null && !notAnyPlaces
           ? Container(
               decoration: BoxDecoration(
                 image: DecorationImage(

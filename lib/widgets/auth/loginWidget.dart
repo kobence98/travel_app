@@ -39,6 +39,13 @@ class _LoginPageState extends State<LoginPage> {
     radius = 100;
     allLiked = false;
     bestPlaces = true;
+    /*
+    FirebaseAuth.instance.authStateChanges().listen((User user) {
+      if (user != null && user.emailVerified) {
+        loggedInUser = user;
+      }
+    });
+     */
   }
 
   @override
@@ -54,18 +61,18 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
     } else {
-      FirebaseAuth.instance.authStateChanges().listen((User user) {
-        if (user != null && user.emailVerified) {
-          loggedInUser = user;
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MainWidget()),
-          ).whenComplete(() {
-            emailController.clear();
-            passwordController.clear();
-          });
-        }
-      });
+      /*
+      if (loggedInUser != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MainWidget()),
+        ).whenComplete(() {
+          emailController.clear();
+          passwordController.clear();
+        });
+      }
+       */
+
       return Scaffold(
         appBar: AppBar(
           centerTitle: true,

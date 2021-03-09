@@ -104,10 +104,10 @@ Place createPlace(record) {
   Place place = new Place(
       attributes['name'],
       attributes['picNumber'],
-      attributes['xCoordinate'],
-      attributes['yCoordinate'],
+      attributes['xCoordinate'].toDouble(),
+      attributes['yCoordinate'].toDouble(),
       attributes['creatorUId'],
-      attributes['length'],
+      attributes['length'].toDouble(),
       attributes['hours'],
       attributes['minutes'],
       attributes['levelDiff']);
