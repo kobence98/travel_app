@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_app/api/placesController.dart';
@@ -64,33 +65,41 @@ class _OwnPlacesWidgetState extends State<OwnPlacesWidget> {
     Navigator.of(context).pop();
   }
 
-  void onDelete(int index){
-    showDialog(context: context, builder: (_) => new AlertDialog(
-      content: new Text("Bitosan ki akarod törölni ezt a helyet? Ez a művelet nem vonható vissza!"),
-      actions: [
-        TextButton(
-          child: Text('Igen!'),
-          onPressed: () {
-            Navigator.of(context).pop();
-            ownPlaces
-                .elementAt(index)
-                .id
-                .remove()
-                .whenComplete(() {
-              thisWidget.setState(() {
-                ownPlaces.removeAt(index);
-              });
-            });
-          },
-        ),
-        TextButton(
-          child: Text('Mégse'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    ));
-
+  void onDelete(int index) {
+    showDialog(
+        context: context,
+        builder: (_) => new AlertDialog(
+              content: new Text(
+                  "Bitosan ki akarod törölni ezt a helyet? Ez a művelet nem vonható vissza!"),
+              actions: [
+                TextButton(
+                  child: Text('Igen!'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    ownPlaces.elementAt(index).id.remove().whenComplete(() {
+                      FirebaseStorage.instance
+                          .ref(ownPlaces.elementAt(index).id.path)
+                          .listAll()
+                          .asStream()
+                          .forEach((element) {
+                        element.items.forEach((el) {
+                          el.delete();
+                        });
+                      }).whenComplete(() {
+                        thisWidget.setState(() {
+                          ownPlaces.removeAt(index);
+                        });
+                      });
+                    });
+                  },
+                ),
+                TextButton(
+                  child: Text('Mégse'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ));
   }
 }

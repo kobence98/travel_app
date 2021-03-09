@@ -23,16 +23,17 @@ class _MenuWidgetState extends State<MenuWidget> {
   @override
   void initState() {
     super.initState();
-    if(placesList.isEmpty){
+    if (placesList.isEmpty) {
       Fluttertoast.showToast(
-          msg: "Nem található egyetlen hely sem a körzetedben, állíts a filtereken!",
+          msg:
+              "Nem található egyetlen hely sem a körzetedben, állíts a filtereken!",
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 2,
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
-      if(notAnyPlaces){
+      if (notAnyPlaces) {
         notAnyPlaces = false;
       }
     }
@@ -250,7 +251,7 @@ class _MenuWidgetState extends State<MenuWidget> {
     Navigator.of(context)
         .push(MaterialPageRoute<void>(builder: (BuildContext context) {
       return OwnPlacesWidget();
-    }));
+    })).whenComplete(() => mainWidget.setState(() {}));
   }
 
   void onPassChange() {
