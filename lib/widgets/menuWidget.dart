@@ -251,7 +251,9 @@ class _MenuWidgetState extends State<MenuWidget> {
     Navigator.of(context)
         .push(MaterialPageRoute<void>(builder: (BuildContext context) {
       return OwnPlacesWidget();
-    })).whenComplete(() => mainWidget.setState(() {}));
+    })).whenComplete(() => mainWidget.setState(() {
+      changeSearchSettings = true;
+    }));
   }
 
   void onPassChange() {
