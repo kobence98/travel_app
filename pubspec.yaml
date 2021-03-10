@@ -58,3 +58,8 @@ flutter:
     - assets/change_pass_cover.gif
 
   uses-material-design: true
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon.png"
