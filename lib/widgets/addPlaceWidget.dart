@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gpx/gpx.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:popup_menu/popup_menu.dart';
 import 'package:travel_app/api/placesController.dart';
 import 'package:travel_app/entities/place.dart';
 import 'package:travel_app/main.dart';
@@ -25,6 +26,8 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
   List<Image> imagesList;
   List<File> imageFilesList;
   File file;
+  int selectedItem;
+  List<GlobalKey> btnKeys = [];
 
   @override
   void initState() {
@@ -143,7 +146,23 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
                 padding: EdgeInsets.all(10),
                 height: 200,
                 alignment: Alignment.centerLeft,
-                child: imagesList.elementAt(index - 5),
+                child: InkWell(
+                  child: imagesList.elementAt(index - 5),
+                  key: btnKeys.elementAt(index - 5),
+                  onLongPress: () {
+                    selectedItem = index - 5;
+                    PopupMenu.context = context;
+                    PopupMenu menu = PopupMenu(
+                      items: [
+                        MenuItem(
+                            title: 'Törlés',
+                            textStyle: TextStyle(fontSize: 20, color: Colors.white)),
+                      ],
+                      onClickMenu: onDeletePress,
+                    );
+                    menu.show(widgetKey: btnKeys.elementAt(selectedItem));
+                  },
+                ),
               );
             } else {
               return ElevatedButton(
@@ -177,6 +196,7 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
           _image,
           fit: BoxFit.fitHeight,
         ));
+        btnKeys.add(GlobalKey());
       } else {
         Fluttertoast.showToast(
             msg: "Nem megfelelő formátum! Jpg szükséges!",
@@ -208,30 +228,50 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
   }
 
   Future<void> onSavePress() async {
-    Gpx gpxFile = GpxReader().fromString(file.readAsStringSync());
-    double x = gpxFile.trks.first.trksegs.first.trkpts.first.lat;
-    double y = gpxFile.trks.first.trksegs.first.trkpts.first.lon;
-    Place place = new Place(
-        nameController.text,
-        imagesList.length,
-        x,
-        y,
-        loggedInUser.uid,
-        double.parse(lengthController.text),
-        int.parse(hoursController.text),
-        int.parse(minutesController.text),
-        int.parse(levelDiffController.text));
-    place.setId(savePlace(place));
-
-    var dbRef = FirebaseStorage.instance.ref(place.id.path + '/');
-    for (int i = 0; i < imageFilesList.length; i++) {
-      File image = imageFilesList.elementAt(i);
-      await dbRef.child(i.toString() + '.jpg').putFile(image);
+    if(nameController.text.isEmpty
+        || lengthController.text.isEmpty
+        || minutesController.text.isEmpty
+        || hoursController.text.isEmpty
+        || levelDiffController.text.isEmpty
+        || imagesList == null
+        || file == null
+        || imagesList.isEmpty
+    ) {
+      Fluttertoast.showToast(
+          msg: "Minden mezőt töltsél ki!",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
     }
+    else{
+      Gpx gpxFile = GpxReader().fromString(file.readAsStringSync());
+      double x = gpxFile.trks.first.trksegs.first.trkpts.first.lat;
+      double y = gpxFile.trks.first.trksegs.first.trkpts.first.lon;
+      Place place = new Place(
+          nameController.text,
+          imagesList.length,
+          x,
+          y,
+          loggedInUser.uid,
+          double.parse(lengthController.text.replaceAll(",", ".")),
+          int.parse(hoursController.text),
+          int.parse(minutesController.text),
+          int.parse(levelDiffController.text));
+      place.setId(savePlace(place));
 
-    await dbRef.child('place.gpx').putFile(file);
+      var dbRef = FirebaseStorage.instance.ref(place.id.path + '/');
+      for (int i = 0; i < imageFilesList.length; i++) {
+        File image = imageFilesList.elementAt(i);
+        await dbRef.child(i.toString() + '.jpg').putFile(image);
+      }
 
-    Navigator.of(context).pop();
+      await dbRef.child('place.gpx').putFile(file);
+
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -242,5 +282,12 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
     minutesController.dispose();
     levelDiffController.dispose();
     super.dispose();
+  }
+
+  void onDeletePress(MenuItemProvider provider) {
+    setState(() {
+      imageFilesList.removeAt(selectedItem);
+      imagesList.removeAt(selectedItem);
+    });
   }
 }

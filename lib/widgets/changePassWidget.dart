@@ -85,7 +85,7 @@ class _ChangePassWidgetState extends State<ChangePassWidget> {
                   height: 70,
                   minWidth: 300,
                   child: ElevatedButton(
-                    onPressed: onRegistrationPress,
+                    onPressed: onChangePassPress,
                     child: Text(
                       "Jelszó megváltoztatása",
                       style: TextStyle(fontSize: 20, color: Colors.black),
@@ -110,7 +110,7 @@ class _ChangePassWidgetState extends State<ChangePassWidget> {
     super.dispose();
   }
 
-  Future<void> onRegistrationPress() async {
+  Future<void> onChangePassPress() async {
     if (passwordController.text == passAgainController.text) {
       if(passwordController.text.isEmpty){
         Fluttertoast.showToast(
@@ -125,8 +125,17 @@ class _ChangePassWidgetState extends State<ChangePassWidget> {
       else {
         try {
           FirebaseAuth.instance.currentUser
-              .updatePassword(passwordController.text);
-          Navigator.of(context).pop();
+              .updatePassword(passwordController.text).whenComplete(() {
+              Navigator.of(context).pop();
+              Fluttertoast.showToast(
+              msg: "Sikeres jelszóváltoztatás!",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 2,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          });
         } on FirebaseAuthException catch (e) {
           if (e.code == 'weak-password') {
             Fluttertoast.showToast(

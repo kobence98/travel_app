@@ -61,121 +61,119 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
     } else {
-      /*
-      if (loggedInUser != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MainWidget()),
-        ).whenComplete(() {
-          emailController.clear();
-          passwordController.clear();
-        });
-      }
-       */
-
       return Scaffold(
         appBar: AppBar(
           centerTitle: true,
           title: Text("Travel app"),
         ),
-        body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/images/main_cover.gif"),
-              fit: BoxFit.fill,
-            ),
-          ),
-          child: Center(
-            child: Container(
-              padding:
-                  EdgeInsets.all(MediaQuery.of(context).size.height * 0.02),
-              width: 600,
-              height: 1000,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Container(
-                      padding: EdgeInsets.only(left: 20.0),
-                      color: Colors.white.withOpacity(0.7),
-                      child: TextField(
-                        style: TextStyle(color: Colors.black),
-                        controller: emailController,
-                        cursorColor: Colors.black,
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          hintStyle:
-                              TextStyle(color: Colors.black.withOpacity(0.5)),
+        body: StreamBuilder<User>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (BuildContext context, snapshot) {
+            if (!snapshot.hasData) {
+              return Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/main_cover.gif"),
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(
+                        MediaQuery.of(context).size.height * 0.02),
+                    width: 600,
+                    height: 1000,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Container(
+                            padding: EdgeInsets.only(left: 20.0),
+                            color: Colors.white.withOpacity(0.7),
+                            child: TextField(
+                              style: TextStyle(color: Colors.black),
+                              controller: emailController,
+                              cursorColor: Colors.black,
+                              decoration: InputDecoration(
+                                hintText: 'Email',
+                                hintStyle: TextStyle(
+                                    color: Colors.black.withOpacity(0.5)),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Center(
-                    child: Container(
-                      padding: EdgeInsets.only(left: 20.0),
-                      color: Colors.white.withOpacity(0.7),
-                      child: TextField(
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        obscureText: true,
-                        style: TextStyle(color: Colors.black),
-                        controller: passwordController,
-                        cursorColor: Colors.black,
-                        decoration: InputDecoration(
-                          hintText: 'Jelszó',
-                          hintStyle:
-                              TextStyle(color: Colors.black.withOpacity(0.5)),
+                        SizedBox(height: 5),
+                        Center(
+                          child: Container(
+                            padding: EdgeInsets.only(left: 20.0),
+                            color: Colors.white.withOpacity(0.7),
+                            child: TextField(
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              obscureText: true,
+                              style: TextStyle(color: Colors.black),
+                              controller: passwordController,
+                              cursorColor: Colors.black,
+                              decoration: InputDecoration(
+                                hintText: 'Jelszó',
+                                hintStyle: TextStyle(
+                                    color: Colors.black.withOpacity(0.5)),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Center(
-                    child: ButtonTheme(
-                      height: 50,
-                      minWidth: 300,
-                      child: RaisedButton(
-                        onPressed: onLoginPressed,
-                        child: Text(
-                          "Bejelentkezés",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
+                        SizedBox(height: 10),
+                        Center(
+                          child: ButtonTheme(
+                            height: 50,
+                            minWidth: 300,
+                            child: RaisedButton(
+                              onPressed: onLoginPressed,
+                              child: Text(
+                                "Bejelentkezés",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Center(
-                    child: ButtonTheme(
-                      height: 50,
-                      minWidth: 300,
-                      child: RaisedButton(
-                        onPressed: onRegistrationPressed,
-                        child: Text(
-                          "Regisztráció",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
+                        SizedBox(height: 10),
+                        Center(
+                          child: ButtonTheme(
+                            height: 50,
+                            minWidth: 300,
+                            child: RaisedButton(
+                              onPressed: onRegistrationPressed,
+                              child: Text(
+                                "Regisztráció",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                        color: Colors.white,
-                      ),
+                        SizedBox(height: 10),
+                        Center(
+                          child: GestureDetector(
+                            child: Text(
+                              "Elfelejtetted a jelszavadat? Kattints ide!",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onTap: onForgetPasswordTap,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Center(
-                    child: GestureDetector(
-                      child: Text(
-                        "Elfelejtetted a jelszavadat? Kattints ide!",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onTap: onForgetPasswordTap,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+                ),
+              );
+            } else {
+              loggedInUser = snapshot.data;
+              return MainWidget();
+            }
+          },
         ),
       );
     }

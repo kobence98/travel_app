@@ -210,8 +210,14 @@ class _MenuWidgetState extends State<MenuWidget> {
   }
 
   void logOut() {
-    Navigator.of(context).pop();
     FirebaseAuth.instance.signOut();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => LoginPage(),
+      ),
+          (route) => false,
+    );
   }
 
   void onRadiusSwitcher(bool switcher) {

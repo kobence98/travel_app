@@ -60,7 +60,7 @@ class _MainWidgetState extends State<MainWidget> {
           }
           placesList.forEach((place) {
             place.setPictures().whenComplete(() {
-              if (placesList.isEmpty || place == placesList.last) {
+              if (placesList.isEmpty || (place == placesList.last && place.pictures.length == place.picNumber)) {
                 setState(() {
                   likeRefresh = true;
                 });
