@@ -21,10 +21,11 @@ class Place {
   double length;
   int hours;
   int minutes;
-  int levelDiff;
+  int levelDiffUp;
+  int levelDiffDown;
 
   Place(this.name, this.picNumber, this.xCoordinate, this.yCoordinate,
-      this.creatorUId, this.length, this.hours, this.minutes, this.levelDiff);
+      this.creatorUId, this.length, this.hours, this.minutes, this.levelDiffUp, this.levelDiffDown);
 
   void likePlace(User user) {
     if (this.usersLiked.contains(user.uid)) {
@@ -50,7 +51,8 @@ class Place {
       'length': this.length,
       'hours': this.hours,
       'minutes': this.minutes,
-      'levelDiff': this.levelDiff
+      'levelDiffUp': this.levelDiffUp,
+      'levelDiffDown': this.levelDiffDown
     };
   }
 
@@ -96,7 +98,8 @@ Place createPlace(record) {
     'length': 0.0,
     'hours': 0,
     'minutes': 0,
-    'levelDiff': 0
+    'levelDiffUp': 0,
+    'levelDiffDown': 0
   };
 
   record.forEach((key, value) => {attributes[key] = value});
@@ -110,7 +113,8 @@ Place createPlace(record) {
       attributes['length'].toDouble(),
       attributes['hours'],
       attributes['minutes'],
-      attributes['levelDiff']);
+      attributes['levelDiffUp'],
+      attributes['levelDiffDown']);
   place.usersLiked = Set.from(attributes['usersLiked']);
   return place;
 }

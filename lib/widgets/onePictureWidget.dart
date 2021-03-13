@@ -45,7 +45,7 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
                     children: [
                       InkWell(
                         child: Text(
-                          "Best places",
+                          "Legjobbak",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: bestPlaces
@@ -72,7 +72,7 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
                       ),
                       InkWell(
                         child: Text(
-                          "New places",
+                          "Újak",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: bestPlaces

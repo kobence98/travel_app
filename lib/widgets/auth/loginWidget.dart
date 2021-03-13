@@ -62,10 +62,6 @@ class _LoginPageState extends State<LoginPage> {
       );
     } else {
       return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text("Travel app"),
-        ),
         body: StreamBuilder<User>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (BuildContext context, snapshot) {
