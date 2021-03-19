@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:location/location.dart';
 import 'package:travel_app/entities/place.dart';
 import 'package:travel_app/main.dart';
@@ -39,13 +38,6 @@ class _LoginPageState extends State<LoginPage> {
     radius = 100;
     allLiked = false;
     bestPlaces = true;
-    /*
-    FirebaseAuth.instance.authStateChanges().listen((User user) {
-      if (user != null && user.emailVerified) {
-        loggedInUser = user;
-      }
-    });
-     */
   }
 
   @override
@@ -190,14 +182,26 @@ class _LoginPageState extends State<LoginPage> {
         .then((success) {
       if (success) {
         if (!loggedInUser.emailVerified) {
-          Fluttertoast.showToast(
-              msg: "A fiókot emailben meg kell erősíteni!",
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 2,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0);
+          showDialog(
+              context: context,
+              builder: (_) => new AlertDialog(
+                    content: new Text(
+                        "Az ön email címe nincsen megerősítve! Ha nem találja az üzenetet, akkor nézze meg először a spam mappát! Ha ezt is próbálta már, akkor kérjen újabb emailt, amelyre most van lehetősége. Kér újabb megerősítő emailt?"),
+                    actions: [
+                      TextButton(
+                        child: Text('Igen!'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Nem, előbb megnézem a spam mappát!'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ));
           FirebaseAuth.instance.signOut();
         } else {
           Navigator.push(
@@ -216,7 +220,13 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => RegistrationWidget()),
-    );
+    ).whenComplete(() {
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    });
   }
 
   void onForgetPasswordTap() {

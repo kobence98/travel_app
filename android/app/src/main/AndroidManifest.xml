@@ -5,8 +5,8 @@
     <uses-permission
             android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <application
-            android:label="travel_app"
-            android:icon="@mipmap/ic_launcher">
+            android:label="Enjoy the trip"
+            android:icon="@mipmap/app_icon">
         <activity
                 android:name=".MainActivity"
                 android:launchMode="singleTop"

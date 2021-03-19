@@ -111,7 +111,7 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
                 width: MediaQuery.of(context).size.width,
                 height: (MediaQuery.of(context).size.height - 50) / 8 * 7,
               ),
-              onLongPress: () {
+              onTap: () {
                 _picData(currentPlaceNumber);
               },
               onDoubleTap: () {

@@ -36,7 +36,6 @@ class MyApp extends StatelessWidget {
               ),
               home: LoginPage());
         }
-
         // Otherwise, show something whilst waiting for initialization to complete
         return Container();
       },

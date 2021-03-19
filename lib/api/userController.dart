@@ -7,7 +7,11 @@ class UserController {
   Future<bool> registerUser(String email, String password) async {
     try {
       await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password).then((value) => value.user.sendEmailVerification());
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((value) {
+        value.user.sendEmailVerification();
+        FirebaseAuth.instance.signOut();
+      });
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -46,7 +50,8 @@ class UserController {
   Future<bool> loginUser(String email, String password) async {
     try {
       await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password)
+          .signInWithEmailAndPassword(
+          email: email.replaceAll(" ", ""), password: password)
           .then((userData) => loggedInUser = userData.user);
       return true;
     } on FirebaseAuthException catch (e) {
@@ -62,6 +67,15 @@ class UserController {
       } else if (e.code == 'wrong-password') {
         Fluttertoast.showToast(
             msg: "Hibás jelszó!",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 2,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      } else if (e.code == 'invalid-email') {
+        Fluttertoast.showToast(
+            msg: "Nem megfelelő email formátum!",
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 2,
