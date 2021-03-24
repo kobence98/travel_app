@@ -12,7 +12,6 @@ import 'package:popup_menu/popup_menu.dart';
 import 'package:travel_app/api/placesController.dart';
 import 'package:travel_app/entities/place.dart';
 import 'package:travel_app/main.dart';
-import 'package:travel_app/widgets/auth/loginWidget.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
 class AddPlaceWidget extends StatefulWidget {
@@ -128,7 +127,8 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
                       items: [
                         MenuItem(
                             title: 'Törlés',
-                            textStyle: TextStyle(fontSize: 20, color: Colors.white)),
+                            textStyle:
+                                TextStyle(fontSize: 20, color: Colors.white)),
                       ],
                       onClickMenu: onDeletePress,
                     );
@@ -200,13 +200,12 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
   }
 
   Future<void> onSavePress() async {
-    if(nameController.text.isEmpty
-        || minutesController.text.isEmpty
-        || hoursController.text.isEmpty
-        || imagesList == null
-        || file == null
-        || imagesList.isEmpty
-    ) {
+    if (nameController.text.isEmpty ||
+        minutesController.text.isEmpty ||
+        hoursController.text.isEmpty ||
+        imagesList == null ||
+        file == null ||
+        imagesList.isEmpty) {
       Fluttertoast.showToast(
           msg: "Minden mezőt töltsél ki!",
           toastLength: Toast.LENGTH_LONG,
@@ -215,8 +214,7 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
-    }
-    else{
+    } else {
       Gpx gpxFile = GpxReader().fromString(file.readAsStringSync());
       List<double> countParams = _countLength(gpxFile);
       double innerLength = countParams.first;
@@ -225,16 +223,17 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
       double x = gpxFile.trks.first.trksegs.first.trkpts.first.lat;
       double y = gpxFile.trks.first.trksegs.first.trkpts.first.lon;
       Place place = new Place(
-          nameController.text,
-          imagesList.length,
-          x,
-          y,
-          loggedInUser.uid,
-          innerLength,
-          int.parse(hoursController.text),
-          int.parse(minutesController.text),
-          up,
-          down
+        nameController.text,
+        imagesList.length,
+        x,
+        y,
+        loggedInUser.uid,
+        innerLength,
+        int.parse(hoursController.text),
+        int.parse(minutesController.text),
+        up,
+        down,
+        null,
       );
       place.setId(savePlace(place));
 
@@ -264,22 +263,22 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
       imagesList.removeAt(selectedItem);
     });
   }
-  
-  List<double> _countLength(Gpx gpx){
+
+  List<double> _countLength(Gpx gpx) {
     List<double> result = [];
     double innerLength = 0;
     double up = 0;
     double down = 0;
-    for(int i = 0; i < gpx.trks.first.trksegs.first.trkpts.length; i++){
-      if(i < gpx.trks.first.trksegs.first.trkpts.length - 1) {
+    for (int i = 0; i < gpx.trks.first.trksegs.first.trkpts.length; i++) {
+      if (i < gpx.trks.first.trksegs.first.trkpts.length - 1) {
         var element = gpx.trks.first.trksegs.first.trkpts.elementAt(i);
         var next = gpx.trks.first.trksegs.first.trkpts.elementAt(i + 1);
-        innerLength += distance(element.lat, next.lat, element.lon, next.lon, element.ele, next.ele);
+        innerLength += distance(element.lat, next.lat, element.lon, next.lon,
+            element.ele, next.ele);
         double diff = next.ele - element.ele;
-        if(diff < 0){
+        if (diff < 0) {
           down += diff;
-        }
-        else{
+        } else {
           up += diff;
         }
       }
@@ -290,16 +289,17 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
     return result;
   }
 
-  double distance(double lat1, double lat2, double lon1,
-      double lon2, double el1, double el2) {
-
+  double distance(double lat1, double lat2, double lon1, double lon2,
+      double el1, double el2) {
     final int R = 6371; // Radius of the earth
 
     double latDistance = vm.radians(lat2 - lat1);
     double lonDistance = vm.radians(lon2 - lon1);
-    double a = sin(latDistance / 2) * sin(latDistance / 2)
-        + cos(vm.radians(lat1)) * cos(vm.radians(lat2))
-            * sin(lonDistance / 2) * sin(lonDistance / 2);
+    double a = sin(latDistance / 2) * sin(latDistance / 2) +
+        cos(vm.radians(lat1)) *
+            cos(vm.radians(lat2)) *
+            sin(lonDistance / 2) *
+            sin(lonDistance / 2);
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
     double distance = R * c * 1000; // convert to meters
 

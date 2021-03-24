@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 import 'package:travel_app/api/placesController.dart';
 import 'package:travel_app/helper/customScrollPhysics.dart';
 import 'package:travel_app/main.dart';
@@ -10,10 +11,18 @@ import 'onePictureWidget.dart';
 
 bool likeRefresh;
 var mainWidget;
-bool changeSearchSettings;
 String name;
 bool searchByName;
 bool notAnyPlaces;
+bool allLiked;
+bool bestPlaces;
+int maxRadius;
+int maxTime;
+int maxLength;
+int minRadius;
+int minTime;
+int minLength;
+bool bestOrNew;
 
 class MainWidget extends StatefulWidget {
   @override
@@ -21,8 +30,8 @@ class MainWidget extends StatefulWidget {
 }
 
 class _MainWidgetState extends State<MainWidget> {
-  PageController _pageControllerA;
-  PageController _pageControllerB;
+  PreloadPageController _pageControllerA;
+  PreloadPageController _pageControllerB;
   bool isInitialPage;
 
   @override
@@ -31,52 +40,66 @@ class _MainWidgetState extends State<MainWidget> {
     isInitialPage = false;
     likeRefresh = false;
     mainWidget = this;
-    changeSearchSettings = false;
     searchByName = false;
     notAnyPlaces = false;
+    allLiked = false;
+    bestPlaces = true;
+    maxRadius = 100;
+    minRadius = 0;
+    bestOrNew = false;
   }
 
   @override
   Widget build(BuildContext context) {
-    _pageControllerA = new PageController(initialPage: 0);
-    _pageControllerB = new PageController(initialPage: 1);
+    _pageControllerA = new PreloadPageController(initialPage: 0);
+    _pageControllerB = new PreloadPageController(initialPage: 1);
     if (!likeRefresh) {
-      if (!changeSearchSettings && !notAnyPlaces) {
-        placesList = null;
+      if (!notAnyPlaces) {
+        if (!bestOrNew) placesList = null;
       } else {
         placesList.clear();
       }
-      getPlaces().then((places) {
-        if (places.isNotEmpty) {
-          placesList = places;
-          if (searchByName) {
-            searchByName = false;
-          } else {
-            if (bestPlaces)
-              placesList
-                  .sort((a, b) => b.likeNumber().compareTo(a.likeNumber()));
-            if (allLiked)
-              placesList.removeWhere(
-                  (place) => !place.usersLiked.contains(loggedInUser.uid));
-          }
-          placesList.forEach((place) {
-            place.setPictures().whenComplete(() {
-              if (placesList.isEmpty ||
-                  (place == placesList.last &&
-                      place.pictures.length == place.picNumber)) {
-                setState(() {
-                  likeRefresh = true;
-                });
-              }
+      if (!bestOrNew) {
+        getPlaces().then((places) {
+          if (places.isNotEmpty) {
+            placesList = places;
+            if (searchByName) {
+              searchByName = false;
+            } else {
+              if (allLiked)
+                placesList.removeWhere(
+                    (place) => !place.usersLiked.contains(loggedInUser.uid));
+            }
+            placesList.forEach((place) {
+              place.setPictures().whenComplete(() {
+                if (placesList.isEmpty ||
+                    (((placesList.length < 5 && place == placesList.last) ||
+                            place == placesList.elementAt(5)) &&
+                        place.pictures.length == place.picNumber)) {
+                  setState(() {
+                    likeRefresh = true;
+                  });
+                }
+              });
             });
-          });
-        } else {
-          setState(() {
-            notAnyPlaces = true;
-            placesList = [];
-          });
+          } else {
+            setState(() {
+              notAnyPlaces = true;
+              placesList = [];
+              searchByName = false;
+            });
+          }
+        });
+      }
+      else{
+        if (bestPlaces)
+          placesList
+              .sort((a, b) => b.likeNumber().compareTo(a.likeNumber()));
+        else{
+          placesList = placesList.reversed.toList();
         }
-      });
+        bestOrNew = false;
+      }
     } else {
       likeRefresh = false;
     }
@@ -92,12 +115,18 @@ class _MainWidgetState extends State<MainWidget> {
                   color: Colors.black,
                 ),
               )
-            : PageView.builder(
+            : PreloadPageView.builder(
+                physics: CustomScrollPhysics(),
+                preloadPagesCount:
+                    placesList.isNotEmpty ? placesList.length - 1 : 0,
                 itemCount: placesList.isNotEmpty ? placesList.length : 1,
                 controller: _pageControllerA,
                 scrollDirection: Axis.vertical,
                 itemBuilder: (BuildContext context, int indexA) {
-                  return PageView.builder(
+                  return PreloadPageView.builder(
+                    preloadPagesCount: placesList.isNotEmpty
+                        ? placesList[indexA].picNumber - 2
+                        : 0,
                     itemCount: placesList.isNotEmpty
                         ? placesList[indexA].picNumber + 1
                         : 1,
@@ -106,10 +135,6 @@ class _MainWidgetState extends State<MainWidget> {
                     itemBuilder: (BuildContext context, int indexB) {
                       if (placesList.isEmpty) {
                         indexA = 0;
-                      }
-                      if (changeSearchSettings) {
-                        indexB = 0;
-                        changeSearchSettings = false;
                       }
                       if (indexB == 0) {
                         isInitialPage = false;
@@ -141,7 +166,6 @@ class _MainWidgetState extends State<MainWidget> {
         duration: Duration(milliseconds: 1000),
         curve: Curves.easeInOutExpo,
       );
-
       return Future.value(false);
     } else {
       return showDialog(

@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:map_launcher/map_launcher.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:weather/weather.dart';
 import 'package:weather_icons/weather_icons.dart';
 
@@ -54,12 +56,16 @@ class _PicDataWidgetState extends State<PicDataWidget> {
           );
   }
 
-  BoxedIcon _weatherIcon(String iconCode){
-    switch(iconCode.substring(0, 2)){
+  BoxedIcon _weatherIcon(String iconCode) {
+    switch (iconCode.substring(0, 2)) {
       case "01":
-        return BoxedIcon(iconCode.characters.elementAt(2) == "d" ? WeatherIcons.day_sunny : WeatherIcons.moon_alt_full);
+        return BoxedIcon(iconCode.characters.elementAt(2) == "d"
+            ? WeatherIcons.day_sunny
+            : WeatherIcons.moon_alt_full);
       case "02":
-        return BoxedIcon(iconCode.characters.elementAt(2) == "d" ? WeatherIcons.day_sunny_overcast : WeatherIcons.night_alt_partly_cloudy);
+        return BoxedIcon(iconCode.characters.elementAt(2) == "d"
+            ? WeatherIcons.day_sunny_overcast
+            : WeatherIcons.night_alt_partly_cloudy);
       case "03":
         return BoxedIcon(WeatherIcons.cloudy);
       case "04":
@@ -67,7 +73,9 @@ class _PicDataWidgetState extends State<PicDataWidget> {
       case "09":
         return BoxedIcon(WeatherIcons.rain);
       case "10":
-        return BoxedIcon(iconCode.characters.elementAt(2) == "d" ? WeatherIcons.day_rain : WeatherIcons.night_alt_rain);
+        return BoxedIcon(iconCode.characters.elementAt(2) == "d"
+            ? WeatherIcons.day_rain
+            : WeatherIcons.night_alt_rain);
       case "11":
         return BoxedIcon(WeatherIcons.lightning);
       case "13":
@@ -120,23 +128,17 @@ class _PicDataWidgetState extends State<PicDataWidget> {
             ListTile(
                 leading: Icon(Icons.place), title: Text("Kezdő koordináták:")),
             ListTile(
-                title: TextField(
-                    textAlign: TextAlign.left,
-                    decoration: new InputDecoration(
-                        hintText: "x: " +
-                            placesList[currentPlaceNumber]
-                                .xCoordinate
-                                .toString(),
-                        contentPadding: EdgeInsets.only(left: 30)))),
+              title: Text(
+                "x: " + placesList[currentPlaceNumber].xCoordinate.toString(),
+                textAlign: TextAlign.center,
+              ),
+            ),
             ListTile(
-                title: TextField(
-                    textAlign: TextAlign.left,
-                    decoration: new InputDecoration(
-                        hintText: "y: " +
-                            placesList[currentPlaceNumber]
-                                .yCoordinate
-                                .toString(),
-                        contentPadding: EdgeInsets.only(left: 30)))),
+              title: Text(
+                "y: " + placesList[currentPlaceNumber].yCoordinate.toString(),
+                textAlign: TextAlign.center,
+              ),
+            ),
             ListTile(
                 leading: Icon(Icons.edit_road),
                 title: Text("Túra hossza: " +
@@ -158,6 +160,16 @@ class _PicDataWidgetState extends State<PicDataWidget> {
                 leading: Icon(Icons.favorite),
                 title: Text("Likeok száma: " +
                     placesList[currentPlaceNumber].likeNumber().toString())),
+            placesList[currentPlaceNumber].kirtippekLink == null
+                ? Container()
+                : ListTile(
+                    leading: Icon(Icons.font_download),
+                    title: Text(
+                        "Részletesebb leírás érdekében kattints ide: kirandulastippek.hu"),
+                    onTap: () {
+                      _launchUrl();
+                    },
+                  ),
             ListTile(
               leading: Icon(Icons.wb_sunny),
               title: Row(
@@ -252,6 +264,24 @@ class _PicDataWidgetState extends State<PicDataWidget> {
         );
       },
     );
+  }
+
+  Future<void> _launchUrl() async {
+    try {
+      await launch(placesList[currentPlaceNumber].kirtippekLink,
+          forceWebView: true);
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: "A " +
+              placesList[currentPlaceNumber].kirtippekLink +
+              " linket nem sikerült megnyitni!",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
   }
 
   void _onDestroy() {

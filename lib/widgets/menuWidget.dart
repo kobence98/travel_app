@@ -15,14 +15,26 @@ class MenuWidget extends StatefulWidget {
 }
 
 class _MenuWidgetState extends State<MenuWidget> {
-  double radiusSliderValue;
-  double lengthSliderValue;
-  double timeSliderValue;
+  RangeValues radiusSliderValue;
+  RangeValues lengthSliderValue;
+  RangeValues timeSliderValue;
   TextEditingController nameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (maxRadius != null)
+      radiusSliderValue =
+          RangeValues(minRadius.toDouble(), maxRadius.toDouble());
+    if (maxLength != null)
+      lengthSliderValue =
+          RangeValues(minLength.toDouble(), maxLength.toDouble());
+    if (maxTime != null)
+      timeSliderValue = RangeValues(minTime.toDouble(), maxTime.toDouble());
     if (placesList.isEmpty) {
       Fluttertoast.showToast(
           msg:
@@ -37,13 +49,6 @@ class _MenuWidgetState extends State<MenuWidget> {
         notAnyPlaces = false;
       }
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (radius != null) radiusSliderValue = radius.toDouble();
-    if (length != null) lengthSliderValue = length.toDouble();
-    if (time != null) timeSliderValue = time.toDouble();
     return _menuWidget();
   }
 
@@ -100,75 +105,122 @@ class _MenuWidgetState extends State<MenuWidget> {
             ],
           ),
         ),
+        SizedBox(
+          height: 2,
+          child: Container(
+            color: Colors.black,
+          ),
+        ),
         ListTile(
           leading: Icon(Icons.radio_button_checked),
-          title: Text('Maximális távolság: ' +
-              (radius != null
-                  ? radiusSliderValue.round().toString() + " km"
+          title: Text('Távolság: ' +
+              (maxRadius != null
+                  ? radiusSliderValue.start.round().toString() +
+                      " - " +
+                      radiusSliderValue.end.round().toString() +
+                      " km"
                   : "korlátlan")),
-          trailing: Switch(value: radius != null, onChanged: onRadiusSwitcher),
+          trailing:
+              Switch(value: maxRadius != null, onChanged: onRadiusSwitcher),
         ),
-        radius == null
+        maxRadius == null
             ? Container()
             : ListTile(
-                title: Slider(
-                  value: radiusSliderValue,
-                  onChanged: (double value) {
-                    radiusSliderValue = value;
-                    onRadiusChange();
+                title: RangeSlider(
+                  values: radiusSliderValue,
+                  onChanged: (RangeValues values) {
+                    setState(() {
+                      radiusSliderValue = values;
+                      minRadius = radiusSliderValue.start.round();
+                      maxRadius = radiusSliderValue.end.round();
+                    });
                   },
                   max: 1000,
-                  min: 50,
-                  divisions: 19,
-                  label: radiusSliderValue.round().toString() + " km",
+                  min: 0,
+                  divisions: 50,
+                  labels: RangeLabels(
+                      radiusSliderValue.start.round().toString() + " km",
+                      radiusSliderValue.end.round().toString() + " km"),
                 ),
               ),
         ListTile(
           leading: Icon(Icons.edit_road_outlined),
-          title: Text('Maximális hossz: ' +
-              (length != null
-                  ? lengthSliderValue.round().toString() + " km"
+          title: Text('Hossz: ' +
+              (maxLength != null
+                  ? lengthSliderValue.start.round().toString() +
+                      " - " +
+                      lengthSliderValue.end.round().toString() +
+                      " km"
                   : "korlátlan")),
-          trailing: Switch(value: length != null, onChanged: onLengthSwitcher),
+          trailing:
+              Switch(value: maxLength != null, onChanged: onLengthSwitcher),
         ),
-        length == null
+        maxLength == null
             ? Container()
             : ListTile(
-                title: Slider(
-                  value: lengthSliderValue,
-                  onChanged: (double value) {
-                    lengthSliderValue = value;
-                    onLengthChange();
+                title: RangeSlider(
+                  values: lengthSliderValue,
+                  onChanged: (RangeValues values) {
+                    setState(() {
+                      lengthSliderValue = values;
+                      minLength = lengthSliderValue.start.round();
+                      maxLength = lengthSliderValue.end.round();
+                    });
                   },
                   max: 15,
-                  min: 1,
-                  divisions: 14,
-                  label: lengthSliderValue.round().toString() + " km",
+                  min: 0,
+                  divisions: 15,
+                  labels: RangeLabels(
+                      lengthSliderValue.start.round().toString() + " km",
+                      lengthSliderValue.end.round().toString() + " km"),
                 ),
               ),
         ListTile(
           leading: Icon(Icons.timer),
           title: Text('Maximális időtartam: ' +
-              (time != null
-                  ? timeSliderValue.round().toString() + " perc"
+              (maxTime != null
+                  ? timeSliderValue.start.round().toString() +
+                      " - " +
+                      timeSliderValue.end.round().toString() +
+                      " perc"
                   : "korlátlan")),
-          trailing: Switch(value: time != null, onChanged: onTimeSwitcher),
+          trailing: Switch(value: maxTime != null, onChanged: onTimeSwitcher),
         ),
-        time == null
+        maxTime == null
             ? Container()
             : ListTile(
-                title: Slider(
-                  value: timeSliderValue,
-                  onChanged: (double value) {
-                    timeSliderValue = value;
-                    onTimeChange();
+                title: RangeSlider(
+                  values: timeSliderValue,
+                  onChanged: (RangeValues values) {
+                    setState(() {
+                      timeSliderValue = values;
+                      minTime = timeSliderValue.start.round();
+                      maxTime = timeSliderValue.end.round();
+                    });
                   },
                   max: 600,
-                  min: 30,
-                  divisions: 19,
-                  label: timeSliderValue.round().toString() + " perc",
+                  min: 0,
+                  divisions: 20,
+                  labels: RangeLabels(
+                      timeSliderValue.start.round().toString() + " perc",
+                      timeSliderValue.end.round().toString() + " perc"),
                 ),
               ),
+        ListTile(
+          leading: Icon(Icons.done_all),
+          title: Text(
+            "Filterek aktiválása",
+            style: TextStyle(color: Colors.white),
+          ),
+          tileColor: Colors.blue,
+          onTap: onFiltersPressed,
+        ),
+        SizedBox(
+          height: 2,
+          child: Container(
+            color: Colors.black,
+          ),
+        ),
         ListTile(
           leading: Icon(Icons.exit_to_app),
           title: Text('Kijelentkezés'),
@@ -182,30 +234,22 @@ class _MenuWidgetState extends State<MenuWidget> {
     Navigator.push(
             context, MaterialPageRoute(builder: (context) => AddPlaceWidget()))
         .whenComplete(() {
-      mainWidget.setState(() {
-        changeSearchSettings = true;
-      });
+      mainWidget.setState(() {});
     });
   }
 
-  void onRadiusChange() {
+  void onFiltersPressed() {
     mainWidget.setState(() {
-      changeSearchSettings = true;
-      radius = radiusSliderValue.round();
-    });
-  }
-
-  void onLengthChange() {
-    mainWidget.setState(() {
-      changeSearchSettings = true;
-      length = lengthSliderValue.round();
-    });
-  }
-
-  void onTimeChange() {
-    mainWidget.setState(() {
-      changeSearchSettings = true;
-      time = timeSliderValue.round();
+      maxRadius =
+          radiusSliderValue == null ? null : radiusSliderValue.end.round();
+      maxLength =
+          lengthSliderValue == null ? null : lengthSliderValue.end.round();
+      maxTime = timeSliderValue == null ? null : timeSliderValue.end.round();
+      minRadius =
+          radiusSliderValue == null ? null : radiusSliderValue.start.round();
+      minLength =
+          lengthSliderValue == null ? null : lengthSliderValue.start.round();
+      minTime = timeSliderValue == null ? null : timeSliderValue.start.round();
     });
   }
 
@@ -216,39 +260,39 @@ class _MenuWidgetState extends State<MenuWidget> {
       MaterialPageRoute(
         builder: (BuildContext context) => LoginPage(),
       ),
-          (route) => false,
+      (route) => false,
     );
   }
 
   void onRadiusSwitcher(bool switcher) {
-    mainWidget.setState(() {
-      changeSearchSettings = true;
-      if (radius == null) {
-        radius = 600;
+    setState(() {
+      if (maxRadius == null) {
+        maxRadius = 600;
+        minRadius = 0;
       } else {
-        radius = null;
+        maxRadius = null;
       }
     });
   }
 
   void onLengthSwitcher(bool switcher) {
-    mainWidget.setState(() {
-      changeSearchSettings = true;
-      if (length == null) {
-        length = 6;
+    setState(() {
+      if (maxLength == null) {
+        maxLength = 6;
+        minLength = 0;
       } else {
-        length = null;
+        maxLength = null;
       }
     });
   }
 
   void onTimeSwitcher(bool switcher) {
-    mainWidget.setState(() {
-      changeSearchSettings = true;
-      if (time == null) {
-        time = 300;
+    setState(() {
+      if (maxTime == null) {
+        maxTime = 300;
+        minTime = 0;
       } else {
-        time = null;
+        maxTime = null;
       }
     });
   }
@@ -257,9 +301,7 @@ class _MenuWidgetState extends State<MenuWidget> {
     Navigator.of(context)
         .push(MaterialPageRoute<void>(builder: (BuildContext context) {
       return OwnPlacesWidget();
-    })).whenComplete(() => mainWidget.setState(() {
-      changeSearchSettings = true;
-    }));
+    })).whenComplete(() => mainWidget.setState(() {}));
   }
 
   void onPassChange() {

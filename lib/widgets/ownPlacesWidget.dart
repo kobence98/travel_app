@@ -40,22 +40,29 @@ class _OwnPlacesWidgetState extends State<OwnPlacesWidget> {
             )
           : Column(
               children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: ownPlaces.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      leading: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          onDelete(index);
-                        },
-                      ),
-                      title: Text(ownPlaces.elementAt(index).name),
-                    );
-                  },
+                Flexible(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: ownPlaces.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        leading: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            onDelete(index);
+                          },
+                        ),
+                        title: Text(ownPlaces.elementAt(index).name),
+                      );
+                    },
+                  ),
+                  flex: 8,
                 ),
-                ElevatedButton(onPressed: onQuit, child: Text("Vissza")),
+                Flexible(
+                  child:
+                      ElevatedButton(onPressed: onQuit, child: Text("Vissza")),
+                  flex: 1,
+                ),
               ],
             ),
     );

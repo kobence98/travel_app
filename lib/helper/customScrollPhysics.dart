@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/physics.dart';
 
-class CustomScrollPhysics extends ScrollPhysics {
+class CustomScrollPhysics extends AlwaysScrollableScrollPhysics {
   const CustomScrollPhysics({ScrollPhysics parent})
       : super(parent: parent);
 

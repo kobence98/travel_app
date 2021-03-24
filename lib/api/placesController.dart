@@ -31,13 +31,21 @@ Future<List<Place>> getPlaces() async {
           place.setId(databaseReference.child('places/' + key));
           places.add(place);
         }
-      } else if ((radius == null ||
-              distance(place.xCoordinate, currentLocation.latitude,
-                          place.yCoordinate, currentLocation.longitude) /
-                      1000 <=
-                  radius) &&
-          (time == null || time > (place.hours * 60 + place.minutes)) &&
-          (length == null || place.length < length.toDouble())) {
+      } else if ((maxRadius == null ||
+              (distance(place.xCoordinate, currentLocation.latitude,
+                              place.yCoordinate, currentLocation.longitude) /
+                          1000 <=
+                      maxRadius) &&
+                  distance(place.xCoordinate, currentLocation.latitude,
+                              place.yCoordinate, currentLocation.longitude) /
+                          1000 >=
+                      minRadius) &&
+          (maxTime == null ||
+              (maxTime >= (place.hours * 60 + place.minutes) &&
+                  (minTime <= (place.hours * 60 + place.minutes)))) &&
+          (maxLength == null ||
+              ((place.length <= maxLength.toDouble()) &&
+                  (place.length >= minLength.toDouble())))) {
         place.setId(databaseReference.child('places/' + key));
         places.add(place);
       }
@@ -68,7 +76,7 @@ Future<List<Place>> getOwnPlaces() async {
   if (dataSnapshot.value != null) {
     dataSnapshot.value.forEach((key, value) {
       Place place = createPlace(value);
-      if(place.creatorUId == loggedInUser.uid){
+      if (place.creatorUId == loggedInUser.uid) {
         place.setId(databaseReference.child('places/' + key));
         places.add(place);
       }

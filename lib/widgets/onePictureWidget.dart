@@ -58,6 +58,7 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
                           if (!bestPlaces) {
                             mainWidget.setState(() {
                               bestPlaces = true;
+                              bestOrNew = true;
                             });
                           }
                         },
@@ -85,6 +86,7 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
                           if (bestPlaces) {
                             mainWidget.setState(() {
                               bestPlaces = false;
+                              bestOrNew = true;
                             });
                           }
                         },

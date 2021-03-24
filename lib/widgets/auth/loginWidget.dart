@@ -10,11 +10,6 @@ import 'forgetPasswordTap.dart';
 import 'registrationWidget.dart';
 
 List<Place> placesList;
-int radius;
-bool allLiked;
-bool bestPlaces;
-int time;
-int length;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -35,9 +30,6 @@ class _LoginPageState extends State<LoginPage> {
         currentLocation = loc;
       });
     });
-    radius = 100;
-    allLiked = false;
-    bestPlaces = true;
   }
 
   @override
@@ -222,10 +214,7 @@ class _LoginPageState extends State<LoginPage> {
       MaterialPageRoute(builder: (context) => RegistrationWidget()),
     ).whenComplete(() {
       Navigator.pop(context);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
+      runApp(MyApp());
     });
   }
 
