@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:map_launcher/map_launcher.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:weather/weather.dart';
 import 'package:weather_icons/weather_icons.dart';
@@ -22,6 +23,8 @@ class PicDataWidget extends StatefulWidget {
 
 class _PicDataWidgetState extends State<PicDataWidget> {
   final int currentPlaceNumber;
+  //static LatLng cpNEStatic;
+  //static LatLng cpSWStatic;
   List<Weather> weather;
 
   _PicDataWidgetState({this.currentPlaceNumber});
@@ -43,6 +46,26 @@ class _PicDataWidgetState extends State<PicDataWidget> {
 
   @override
   Widget build(BuildContext context) {
+    /*
+    cpNEStatic = LatLng(
+        placesList[currentPlaceNumber]
+            .searchMapLatLngEast()
+            .elementAt(0)
+            .latitude,
+        placesList[currentPlaceNumber]
+            .searchMapLatLngEast()
+            .elementAt(0)
+            .longitude);
+    cpSWStatic = LatLng(
+        placesList[currentPlaceNumber]
+            .searchMapLatLngEast()
+            .elementAt(1)
+            .latitude,
+        placesList[currentPlaceNumber]
+            .searchMapLatLngEast()
+            .elementAt(1)
+            .longitude);ma
+     */
     return weather != null
         ? _picDataWidget()
         : Container(
@@ -211,12 +234,30 @@ class _PicDataWidgetState extends State<PicDataWidget> {
               ),
               onPressed: onMapPress,
             ),
+            /*
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.blue.shade900),
+              ),
+              child: Text(
+                "Térkép mentése offline",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {
+                downloadOfflineRegion(offlineRegion, onEvent: onEvent);
+              },
+            ),
+             */
           ],
         ),
         onTap: _onDestroy,
       ),
     );
   }
+
 
   void onMapPress() {
     Navigator.push(
@@ -227,6 +268,33 @@ class _PicDataWidgetState extends State<PicDataWidget> {
               )),
     );
   }
+
+  final Function(DownloadRegionStatus event) onEvent =
+      (DownloadRegionStatus status) {
+    if (status.runtimeType == Success) {
+      // ...
+    } else if (status.runtimeType == InProgress) {
+      int progress = (status as InProgress).progress.round();
+      // ...
+    } else if (status.runtimeType == Error) {
+      // ...
+    }
+  };
+
+  /*
+  final OfflineRegion offlineRegion = OfflineRegion(
+    bounds: LatLngBounds(
+      northeast: cpNEStatic,
+      southwest: cpSWStatic,
+    ),
+    id: 1,
+    minZoom: 6,
+    maxZoom: 18,
+    mapStyleUrl: 'mapbox://styles/mapbox/streets-v11',
+    metadata: {},
+  );
+
+   */
 
   Future<void> onRoutePlanPress() async {
     final availableMaps = await MapLauncher.installedMaps;

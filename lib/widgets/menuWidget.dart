@@ -23,6 +23,17 @@ class _MenuWidgetState extends State<MenuWidget> {
   @override
   void initState() {
     super.initState();
+    if (placesList.isEmpty) {
+      Fluttertoast.showToast(
+          msg:
+          "Nem található egyetlen hely sem a körzetedben, állíts a filtereken!",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
   }
 
   @override
@@ -35,20 +46,6 @@ class _MenuWidgetState extends State<MenuWidget> {
           RangeValues(minLength.toDouble(), maxLength.toDouble());
     if (maxTime != null)
       timeSliderValue = RangeValues(minTime.toDouble(), maxTime.toDouble());
-    if (placesList.isEmpty) {
-      Fluttertoast.showToast(
-          msg:
-              "Nem található egyetlen hely sem a körzetedben, állíts a filtereken!",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-      if (notAnyPlaces) {
-        notAnyPlaces = false;
-      }
-    }
     return _menuWidget();
   }
 
@@ -254,14 +251,16 @@ class _MenuWidgetState extends State<MenuWidget> {
   }
 
   void logOut() {
-    FirebaseAuth.instance.signOut();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => LoginPage(),
-      ),
-      (route) => false,
-    );
+    FirebaseAuth.instance.signOut().whenComplete((){
+      placesList.clear();
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => LoginPage(),
+        ),
+            (route) => false,
+      );
+    });
   }
 
   void onRadiusSwitcher(bool switcher) {
@@ -271,6 +270,7 @@ class _MenuWidgetState extends State<MenuWidget> {
         minRadius = 0;
       } else {
         maxRadius = null;
+        minRadius = null;
       }
     });
   }
@@ -282,6 +282,7 @@ class _MenuWidgetState extends State<MenuWidget> {
         minLength = 0;
       } else {
         maxLength = null;
+        minLength = null;
       }
     });
   }
@@ -293,6 +294,7 @@ class _MenuWidgetState extends State<MenuWidget> {
         minTime = 0;
       } else {
         maxTime = null;
+        minTime = null;
       }
     });
   }

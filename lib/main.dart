@@ -6,6 +6,7 @@ import 'package:travel_app/api/userController.dart';
 import 'package:travel_app/widgets/auth/loginWidget.dart';
 
 import 'entities/place.dart';
+import 'offlineOrOnlineWidget.dart';
 
 final UserController userController = UserController();
 User loggedInUser;
@@ -21,14 +22,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Firebase.initializeApp();
     return FutureBuilder(
       // Initialize FlutterFire:
       future: _initialization,
       builder: (context, snapshot) {
         // Check for errors
         if (snapshot.hasError) {}
-
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
           return MaterialApp(

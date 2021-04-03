@@ -163,7 +163,6 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    FirebaseAuth.instance.signOut();
     super.dispose();
   }
 
@@ -175,34 +174,31 @@ class _LoginPageState extends State<LoginPage> {
       if (success) {
         if (!loggedInUser.emailVerified) {
           showDialog(
-              context: context,
-              builder: (_) => new AlertDialog(
-                    content: new Text(
-                        "Az ön email címe nincsen megerősítve! Ha nem találja az üzenetet, akkor nézze meg először a spam mappát! Ha ezt is próbálta már, akkor kérjen újabb emailt, amelyre most van lehetősége. Kér újabb megerősítő emailt?"),
-                    actions: [
-                      TextButton(
-                        child: Text('Igen!'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      TextButton(
-                        child: Text('Nem, előbb megnézem a spam mappát!'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  ));
-          FirebaseAuth.instance.signOut();
+                  context: context,
+                  builder: (_) => new AlertDialog(
+                        content: new Text(
+                            "Az ön email címe nincsen megerősítve! Ha nem találja az üzenetet, akkor nézze meg először a spam mappát! Ha ezt is próbálta már, akkor kérjen újabb emailt, amelyre most van lehetősége. Kér újabb megerősítő emailt?"),
+                        actions: [
+                          TextButton(
+                            child: Text('Igen!'),
+                            onPressed: () async {
+                              loggedInUser.sendEmailVerification();
+                              Navigator.of(context).pop();
+                              await FirebaseAuth.instance.signOut();
+                            },
+                          ),
+                          TextButton(
+                            child: Text('Nem, előbb megnézem a spam mappát!'),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              await FirebaseAuth.instance.signOut();
+                            },
+                          ),
+                        ],
+                      ));
         } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MainWidget()),
-          ).whenComplete(() {
-            emailController.clear();
-            passwordController.clear();
-          });
+          Navigator.pop(context);
+          runApp(MyApp());
         }
       }
     });
@@ -222,6 +218,9 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ForgetPasswordWidget()),
-    );
+    ).whenComplete(() {
+      Navigator.pop(context);
+      runApp(MyApp());
+    });
   }
 }

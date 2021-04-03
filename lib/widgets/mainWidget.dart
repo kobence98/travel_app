@@ -13,7 +13,6 @@ bool likeRefresh;
 var mainWidget;
 String name;
 bool searchByName;
-bool notAnyPlaces;
 bool allLiked;
 bool bestPlaces;
 int maxRadius;
@@ -22,7 +21,7 @@ int maxLength;
 int minRadius;
 int minTime;
 int minLength;
-bool bestOrNew;
+bool loaded;
 
 class MainWidget extends StatefulWidget {
   @override
@@ -39,73 +38,61 @@ class _MainWidgetState extends State<MainWidget> {
     super.initState();
     isInitialPage = false;
     likeRefresh = false;
-    mainWidget = this;
     searchByName = false;
-    notAnyPlaces = false;
     allLiked = false;
     bestPlaces = true;
-    maxRadius = 100;
+    maxRadius = 10;
     minRadius = 0;
-    bestOrNew = false;
+    loaded = false;
   }
 
   @override
   Widget build(BuildContext context) {
+    mainWidget = this;
     _pageControllerA = new PreloadPageController(initialPage: 0);
     _pageControllerB = new PreloadPageController(initialPage: 1);
-    if (!likeRefresh) {
-      if (!notAnyPlaces) {
-        if (!bestOrNew) placesList = null;
+    //
+    if (!loaded) {
+      if (likeRefresh) {
+        likeRefresh = false;
+        loaded = true;
+      } else if (allLiked) {
+        placesList.removeWhere(
+            (place) => !place.usersLiked.contains(loggedInUser.uid));
+        loaded = true;
       } else {
-        placesList.clear();
-      }
-      if (!bestOrNew) {
+        placesList = [];
         getPlaces().then((places) {
+          searchByName = false;
           if (places.isNotEmpty) {
             placesList = places;
-            if (searchByName) {
-              searchByName = false;
-            } else {
-              if (allLiked)
-                placesList.removeWhere(
-                    (place) => !place.usersLiked.contains(loggedInUser.uid));
+            if (bestPlaces) {
+              placesList
+                  .sort((a, b) => b.likeNumber().compareTo(a.likeNumber()));
             }
+            //ha név szerint keresnénk akkor azt vissza kell állítani utána
             placesList.forEach((place) {
               place.setPictures().whenComplete(() {
-                if (placesList.isEmpty ||
-                    (((placesList.length < 5 && place == placesList.last) ||
-                            place == placesList.elementAt(5)) &&
-                        place.pictures.length == place.picNumber)) {
+                if (placesList.length < 2 || (place == placesList.elementAt(1) &&
+                    place.pictures.length == place.picNumber)) {
                   setState(() {
-                    likeRefresh = true;
+                    loaded = true;
                   });
                 }
               });
             });
           } else {
             setState(() {
-              notAnyPlaces = true;
+              loaded = true;
               placesList = [];
-              searchByName = false;
             });
           }
         });
       }
-      else{
-        if (bestPlaces)
-          placesList
-              .sort((a, b) => b.likeNumber().compareTo(a.likeNumber()));
-        else{
-          placesList = placesList.reversed.toList();
-        }
-        bestOrNew = false;
-      }
-    } else {
-      likeRefresh = false;
     }
     return WillPopScope(
       child: Scaffold(
-        body: placesList == null && !notAnyPlaces
+        body: !loaded
             ? Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
@@ -125,28 +112,29 @@ class _MainWidgetState extends State<MainWidget> {
                 itemBuilder: (BuildContext context, int indexA) {
                   return PreloadPageView.builder(
                     preloadPagesCount: placesList.isNotEmpty
-                        ? placesList[indexA].picNumber - 2
+                        ? placesList[indexA.round()].picNumber - 2
                         : 0,
                     itemCount: placesList.isNotEmpty
-                        ? placesList[indexA].picNumber + 1
+                        ? placesList[indexA.round()].picNumber + 1
                         : 1,
                     controller: _pageControllerB,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (BuildContext context, int indexB) {
+                      loaded = false;
                       if (placesList.isEmpty) {
                         indexA = 0;
                       }
-                      if (indexB == 0) {
+                      if (indexB.round() == 0) {
                         isInitialPage = false;
                         return MenuWidget();
                       } else {
-                        if (indexB > 1)
+                        if (indexB.round() > 1)
                           isInitialPage = false;
                         else
                           isInitialPage = true;
                         return OnePictureWidget(
-                          currentPlaceNumber: indexA,
-                          currentPictureId: indexB - 1,
+                          currentPlaceNumber: indexA.round(),
+                          currentPictureId: indexB.round() - 1,
                         );
                       }
                     },

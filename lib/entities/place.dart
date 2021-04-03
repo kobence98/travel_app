@@ -86,6 +86,25 @@ class Place {
       });
     });
   }
+
+  List<LatLng> searchMapLatLngEast(){
+    double east = coordinateList.elementAt(0).longitude;
+    double west = coordinateList.elementAt(0).longitude;
+    double north = coordinateList.elementAt(0).latitude;
+    double south = coordinateList.elementAt(0).latitude;
+    for(int i = 0; i < coordinateList.length; i++){
+      double lon = coordinateList.elementAt(i).longitude;
+      double lat = coordinateList.elementAt(i).latitude;
+      if(lon < east) east = lon;
+      if(lon > west) west = lon;
+      if(lat < south) south = lat;
+      if(lat > north) north = lat;
+    }
+    List<LatLng> result = [];
+    result.add(LatLng(north, east));
+    result.add(LatLng(south, west));
+    return result;
+  }
 }
 
 //hely létrehozása
