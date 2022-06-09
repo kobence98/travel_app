@@ -21,10 +21,10 @@ void updatePlace(Place place, DatabaseReference id) {
 }
 
 Future<List<Place>> getPlaces() async {
-  DataSnapshot dataSnapshot = await databaseReference.child('places/').once();
+  DatabaseEvent dataSnapshot = await databaseReference.child('places/').once();
   List<Place> places = [];
-  if (dataSnapshot.value != null) {
-    dataSnapshot.value.forEach((key, value) {
+  if (dataSnapshot.snapshot.value != null) {
+    (dataSnapshot.snapshot.value as Map<String, dynamic>).forEach((key, value) {
       Place place = createPlace(value);
       if (searchByName) {
         if (place.name.toLowerCase().contains(name.toLowerCase())) {
@@ -71,10 +71,10 @@ double distance(double lat1, double lat2, double lon1, double lon2) {
 }
 
 Future<List<Place>> getOwnPlaces() async {
-  DataSnapshot dataSnapshot = await databaseReference.child('places/').once();
+  DatabaseEvent dataSnapshot = await databaseReference.child('places/').once();
   List<Place> places = [];
-  if (dataSnapshot.value != null) {
-    dataSnapshot.value.forEach((key, value) {
+  if (dataSnapshot.snapshot.value != null) {
+    (dataSnapshot.snapshot.value as Map<String, dynamic>).forEach((key, value) {
       Place place = createPlace(value);
       if (place.creatorUId == loggedInUser.uid) {
         place.setId(databaseReference.child('places/' + key));

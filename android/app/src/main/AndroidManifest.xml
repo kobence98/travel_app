@@ -4,7 +4,12 @@
             android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission
             android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
     <application
+            android:name="${applicationName}"
             android:label="Enjoy the trip"
             android:icon="@mipmap/app_icon">
         <activity

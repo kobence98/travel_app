@@ -5,13 +5,12 @@ import 'package:location/location.dart';
 import 'package:travel_app/api/userController.dart';
 import 'package:travel_app/widgets/auth/loginWidget.dart';
 
-import 'entities/place.dart';
-
 final UserController userController = UserController();
 User loggedInUser;
 LocationData currentLocation;
 
 Future<void> main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }

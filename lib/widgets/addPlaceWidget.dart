@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gpx/gpx.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:popup_menu/popup_menu.dart';
+import 'package:popup_menu/popup_menu.dart' as popupMenu;
 import 'package:travel_app/api/placesController.dart';
 import 'package:travel_app/entities/place.dart';
 import 'package:travel_app/main.dart';
@@ -122,10 +122,10 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
                   key: btnKeys.elementAt(index - 4),
                   onLongPress: () {
                     selectedItem = index - 4;
-                    PopupMenu.context = context;
-                    PopupMenu menu = PopupMenu(
+                    popupMenu.PopupMenu.context = context;
+                    popupMenu.PopupMenu menu = popupMenu.PopupMenu(
                       items: [
-                        MenuItem(
+                        popupMenu.MenuItem(
                             title: 'Törlés',
                             textStyle:
                                 TextStyle(fontSize: 20, color: Colors.white)),
@@ -156,16 +156,17 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
   }
 
   Future<void> addPicture() async {
-    File _image = await ImagePicker.pickImage(
+    final ImagePicker _imagePicker = ImagePicker();
+    XFile _image = await _imagePicker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 0,
     );
 
     setState(() {
       if (_image.path.endsWith('.jpg')) {
-        imageFilesList.add(_image);
+        imageFilesList.add(File(_image.path));
         imagesList.add(Image.file(
-          _image,
+          File(_image.path),
           fit: BoxFit.fitHeight,
         ));
         btnKeys.add(GlobalKey());
@@ -183,7 +184,7 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
   }
 
   Future<void> addFile() async {
-    File selectedFile = await FilePicker.getFile();
+    File selectedFile = (await FilePicker.platform.pickFiles(allowMultiple: false)).paths.map((path) => File(path)).first;
     setState(() {
       if (selectedFile.path.endsWith('.gpx'))
         file = selectedFile;
@@ -257,7 +258,7 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
     super.dispose();
   }
 
-  void onDeletePress(MenuItemProvider provider) {
+  void onDeletePress(popupMenu.MenuItemProvider provider) {
     setState(() {
       imageFilesList.removeAt(selectedItem);
       imagesList.removeAt(selectedItem);
