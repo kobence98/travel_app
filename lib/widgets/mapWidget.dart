@@ -8,7 +8,7 @@ import 'package:travel_app/widgets/auth/loginWidget.dart';
 class MapWidget extends StatefulWidget {
   final int currentPlaceNumber;
 
-  MapWidget({this.currentPlaceNumber});
+  MapWidget({required this.currentPlaceNumber});
 
   @override
   _MapWidgetState createState() =>
@@ -18,9 +18,9 @@ class MapWidget extends StatefulWidget {
 class _MapWidgetState extends State<MapWidget> {
   final int currentPlaceNumber;
 
-  _MapWidgetState({this.currentPlaceNumber});
+  _MapWidgetState({required this.currentPlaceNumber});
 
-  Set<Polyline> polyLines;
+  late Set<Polyline> polyLines;
 
   @override
   void initState() {
@@ -29,7 +29,7 @@ class _MapWidgetState extends State<MapWidget> {
     polyLines.add(Polyline(
         polylineId: PolylineId("utvonal"),
         width: 2,
-        points: placesList[currentPlaceNumber].coordinateList));
+        points: placesList![currentPlaceNumber].coordinateList));
   }
 
   @override

@@ -13,7 +13,7 @@ import 'mapWidget.dart';
 class PicDataWidget extends StatefulWidget {
   final int currentPlaceNumber;
 
-  PicDataWidget({this.currentPlaceNumber});
+  PicDataWidget({required this.currentPlaceNumber});
 
   @override
   _PicDataWidgetState createState() =>
@@ -22,18 +22,18 @@ class PicDataWidget extends StatefulWidget {
 
 class _PicDataWidgetState extends State<PicDataWidget> {
   final int currentPlaceNumber;
-  List<Weather> weather;
+  List<Weather>? weather;
 
-  _PicDataWidgetState({this.currentPlaceNumber});
+  _PicDataWidgetState({required this.currentPlaceNumber});
 
   @override
   void initState() {
     super.initState();
-    placesList[currentPlaceNumber].setGPX();
+    placesList![currentPlaceNumber].setGPX();
     WeatherFactory wf = new WeatherFactory("c04464c51f6b391b2799d8bc8e62eb7f");
     wf
-        .fiveDayForecastByLocation(placesList[currentPlaceNumber].xCoordinate,
-            placesList[currentPlaceNumber].yCoordinate)
+        .fiveDayForecastByLocation(placesList![currentPlaceNumber].xCoordinate,
+            placesList![currentPlaceNumber].yCoordinate)
         .then((value) {
       setState(() {
         weather = value;
@@ -100,15 +100,15 @@ class _PicDataWidgetState extends State<PicDataWidget> {
                 ),
               ),
               Container(
-                  child: Text(weather
+                  child: Text(weather!
                           .elementAt(i)
-                          .temperature
-                          .celsius
+                          .temperature!
+                          .celsius!
                           .round()
                           .toString() +
                       "C°")),
               Container(
-                child: _weatherIcon(weather.elementAt(i).weatherIcon),
+                child: _weatherIcon(weather!.elementAt(i).weatherIcon!),
               ),
             ],
           ),
@@ -124,43 +124,43 @@ class _PicDataWidgetState extends State<PicDataWidget> {
           children: <Widget>[
             ListTile(
                 leading: Icon(Icons.font_download),
-                title: Text("Név: " + placesList[currentPlaceNumber].name)),
+                title: Text("Név: " + placesList![currentPlaceNumber].name)),
             ListTile(
                 leading: Icon(Icons.place), title: Text("Kezdő koordináták:")),
             ListTile(
               title: Text(
-                "x: " + placesList[currentPlaceNumber].xCoordinate.toString(),
+                "x: " + placesList![currentPlaceNumber].xCoordinate.toString(),
                 textAlign: TextAlign.center,
               ),
             ),
             ListTile(
               title: Text(
-                "y: " + placesList[currentPlaceNumber].yCoordinate.toString(),
+                "y: " + placesList![currentPlaceNumber].yCoordinate.toString(),
                 textAlign: TextAlign.center,
               ),
             ),
             ListTile(
                 leading: Icon(Icons.edit_road),
                 title: Text("Túra hossza: " +
-                    placesList[currentPlaceNumber].length.toString() +
+                    placesList![currentPlaceNumber].length.toString() +
                     " km - " +
-                    placesList[currentPlaceNumber].hours.toString() +
+                    placesList![currentPlaceNumber].hours.toString() +
                     " óra " +
-                    placesList[currentPlaceNumber].minutes.toString() +
+                    placesList![currentPlaceNumber].minutes.toString() +
                     " perc")),
             ListTile(
                 leading: Icon(Icons.height),
                 title: Text("Szintkülönbség: " +
-                    placesList[currentPlaceNumber].levelDiffUp.toString() +
+                    placesList![currentPlaceNumber].levelDiffUp.toString() +
                     " méter fel - " +
-                    (placesList[currentPlaceNumber].levelDiffDown * (-1))
+                    (placesList![currentPlaceNumber].levelDiffDown * (-1))
                         .toString() +
                     " méter le")),
             ListTile(
                 leading: Icon(Icons.favorite),
                 title: Text("Likeok száma: " +
-                    placesList[currentPlaceNumber].likeNumber().toString())),
-            placesList[currentPlaceNumber].kirtippekLink == null
+                    placesList![currentPlaceNumber].likeNumber().toString())),
+            placesList![currentPlaceNumber].kirtippekLink == null
                 ? Container()
                 : ListTile(
                     leading: Icon(Icons.font_download),
@@ -242,13 +242,13 @@ class _PicDataWidgetState extends State<PicDataWidget> {
                     ListTile(
                       onTap: () => map.showMarker(
                         coords: Coords(
-                            placesList
+                            placesList!
                                 .elementAt(currentPlaceNumber)
                                 .xCoordinate,
-                            placesList
+                            placesList!
                                 .elementAt(currentPlaceNumber)
                                 .yCoordinate),
-                        title: placesList.elementAt(currentPlaceNumber).name,
+                        title: placesList!.elementAt(currentPlaceNumber).name,
                       ),
                       title: Text(map.mapName),
                       leading: SvgPicture.asset(
@@ -268,12 +268,12 @@ class _PicDataWidgetState extends State<PicDataWidget> {
 
   Future<void> _launchUrl() async {
     try {
-      await launch(placesList[currentPlaceNumber].kirtippekLink,
+      await launch(placesList![currentPlaceNumber].kirtippekLink!,
           forceWebView: true);
     } catch (e) {
       Fluttertoast.showToast(
           msg: "A " +
-              placesList[currentPlaceNumber].kirtippekLink +
+              placesList![currentPlaceNumber].kirtippekLink! +
               " linket nem sikerült megnyitni!",
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.CENTER,

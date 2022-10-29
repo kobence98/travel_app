@@ -114,15 +114,16 @@ class _RegistrationWidgetState extends State<RegistrationWidget> {
                   child: ButtonTheme(
                     height: 50,
                     minWidth: 300,
-                    child: RaisedButton(
+                    child: ElevatedButton(
                       onPressed: onRegistrationPress,
                       child: Text(
                         "Regisztráció",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20),
                       ),
-                      color: Colors.white,
+
                     ),
+                    buttonColor: Colors.white,
                   ),
                 ),
               ],

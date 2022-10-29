@@ -9,20 +9,20 @@ import 'auth/loginWidget.dart';
 import 'menuWidget.dart';
 import 'onePictureWidget.dart';
 
-bool likeRefresh;
+late bool likeRefresh;
 var mainWidget;
-String name;
-bool searchByName;
-bool notAnyPlaces;
-bool allLiked;
-bool bestPlaces;
-int maxRadius;
-int maxTime;
-int maxLength;
-int minRadius;
-int minTime;
-int minLength;
-bool bestOrNew;
+late String name;
+late bool searchByName;
+late bool notAnyPlaces;
+late bool allLiked;
+late bool bestPlaces;
+int? maxRadius;
+int? maxTime;
+int? maxLength;
+int? minRadius;
+int? minTime;
+int? minLength;
+late bool bestOrNew;
 
 class MainWidget extends StatefulWidget {
   @override
@@ -30,9 +30,9 @@ class MainWidget extends StatefulWidget {
 }
 
 class _MainWidgetState extends State<MainWidget> {
-  PreloadPageController _pageControllerA;
-  PreloadPageController _pageControllerB;
-  bool isInitialPage;
+  late PreloadPageController _pageControllerA;
+  late PreloadPageController _pageControllerB;
+  late bool isInitialPage;
 
   @override
   void initState() {
@@ -57,7 +57,7 @@ class _MainWidgetState extends State<MainWidget> {
       if (!notAnyPlaces) {
         if (!bestOrNew) placesList = null;
       } else {
-        placesList.clear();
+        placesList!.clear();
       }
       if (!bestOrNew) {
         getPlaces().then((places) {
@@ -67,14 +67,14 @@ class _MainWidgetState extends State<MainWidget> {
               searchByName = false;
             } else {
               if (allLiked)
-                placesList.removeWhere(
+                placesList!.removeWhere(
                     (place) => !place.usersLiked.contains(loggedInUser.uid));
             }
-            placesList.forEach((place) {
+            placesList!.forEach((place) {
               place.setPictures().whenComplete(() {
-                if (placesList.isEmpty ||
-                    (((placesList.length < 5 && place == placesList.last) ||
-                            place == placesList.elementAt(5)) &&
+                if (placesList!.isEmpty ||
+                    (((placesList!.length < 5 && place == placesList!.last) ||
+                            place == placesList!.elementAt(5)) &&
                         place.pictures.length == place.picNumber)) {
                   setState(() {
                     likeRefresh = true;
@@ -93,10 +93,10 @@ class _MainWidgetState extends State<MainWidget> {
       }
       else{
         if (bestPlaces)
-          placesList
+          placesList!
               .sort((a, b) => b.likeNumber().compareTo(a.likeNumber()));
         else{
-          placesList = placesList.reversed.toList();
+          placesList = placesList!.reversed.toList();
         }
         bestOrNew = false;
       }
@@ -118,22 +118,22 @@ class _MainWidgetState extends State<MainWidget> {
             : PreloadPageView.builder(
                 physics: CustomScrollPhysics(),
                 preloadPagesCount:
-                    placesList.isNotEmpty ? placesList.length - 1 : 0,
-                itemCount: placesList.isNotEmpty ? placesList.length : 1,
+                    placesList!.isNotEmpty ? placesList!.length - 1 : 0,
+                itemCount: placesList!.isNotEmpty ? placesList!.length : 1,
                 controller: _pageControllerA,
                 scrollDirection: Axis.vertical,
                 itemBuilder: (BuildContext context, int indexA) {
                   return PreloadPageView.builder(
-                    preloadPagesCount: placesList.isNotEmpty
-                        ? placesList[indexA].picNumber - 2
+                    preloadPagesCount: placesList!.isNotEmpty
+                        ? placesList![indexA].picNumber - 2
                         : 0,
-                    itemCount: placesList.isNotEmpty
-                        ? placesList[indexA].picNumber + 1
+                    itemCount: placesList!.isNotEmpty
+                        ? placesList![indexA].picNumber + 1
                         : 1,
                     controller: _pageControllerB,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (BuildContext context, int indexB) {
-                      if (placesList.isEmpty) {
+                      if (placesList!.isEmpty) {
                         indexA = 0;
                       }
                       if (indexB == 0) {
@@ -168,7 +168,7 @@ class _MainWidgetState extends State<MainWidget> {
       );
       return Future.value(false);
     } else {
-      return showDialog(
+      showDialog(
               context: context,
               builder: (_) => new AlertDialog(
                     content:
@@ -187,8 +187,8 @@ class _MainWidgetState extends State<MainWidget> {
                         },
                       ),
                     ],
-                  )) ??
-          false;
+                  ));
+      return Future.value(false);
     }
   }
 

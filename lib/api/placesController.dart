@@ -24,29 +24,30 @@ Future<List<Place>> getPlaces() async {
   DatabaseEvent dataSnapshot = await databaseReference.child('places/').once();
   List<Place> places = [];
   if (dataSnapshot.snapshot.value != null) {
-    (dataSnapshot.snapshot.value as Map<String, dynamic>).forEach((key, value) {
+    (dataSnapshot.snapshot.value as Map).forEach((key, value) {
       Place place = createPlace(value);
       if (searchByName) {
         if (place.name.toLowerCase().contains(name.toLowerCase())) {
-          place.setId(databaseReference.child('places/' + key));
+          place.setId(databaseReference.child('places/' + key!));
           places.add(place);
         }
-      } else if ((maxRadius == null ||
-              (distance(place.xCoordinate, currentLocation.latitude,
-                              place.yCoordinate, currentLocation.longitude) /
+      }
+      else if ((maxRadius == null ||
+              (distance(place.xCoordinate, currentLocation!.latitude!,
+                              place.yCoordinate, currentLocation!.longitude!) /
                           1000 <=
-                      maxRadius) &&
-                  distance(place.xCoordinate, currentLocation.latitude,
-                              place.yCoordinate, currentLocation.longitude) /
+                      maxRadius!) &&
+                  distance(place.xCoordinate, currentLocation!.latitude!,
+                              place.yCoordinate, currentLocation!.longitude!) /
                           1000 >=
-                      minRadius) &&
+                      minRadius!) &&
           (maxTime == null ||
-              (maxTime >= (place.hours * 60 + place.minutes) &&
-                  (minTime <= (place.hours * 60 + place.minutes)))) &&
+              (maxTime! >= (place.hours * 60 + place.minutes) &&
+                  (minTime! <= (place.hours * 60 + place.minutes)))) &&
           (maxLength == null ||
-              ((place.length <= maxLength.toDouble()) &&
-                  (place.length >= minLength.toDouble())))) {
-        place.setId(databaseReference.child('places/' + key));
+              ((place.length <= maxLength!.toDouble()) &&
+                  (place.length >= minLength!.toDouble())))) {
+        place.setId(databaseReference.child('places/' + key!));
         places.add(place);
       }
     });

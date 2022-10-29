@@ -11,7 +11,7 @@ class OnePictureWidget extends StatefulWidget {
   final int currentPlaceNumber;
   final int currentPictureId;
 
-  OnePictureWidget({this.currentPlaceNumber, this.currentPictureId});
+  OnePictureWidget({required this.currentPlaceNumber, required this.currentPictureId});
 
   @override
   _OnePictureWidgetState createState() => _OnePictureWidgetState(
@@ -20,11 +20,11 @@ class OnePictureWidget extends StatefulWidget {
 }
 
 class _OnePictureWidgetState extends State<OnePictureWidget> {
-  int currentPlaceNumber;
-  int currentPictureId;
-  LikeButton likeButton;
+  int? currentPlaceNumber;
+  int? currentPictureId;
+  LikeButton? likeButton;
 
-  _OnePictureWidgetState({this.currentPlaceNumber, this.currentPictureId});
+  _OnePictureWidgetState({required this.currentPlaceNumber, required this.currentPictureId});
 
   @override
   Widget build(BuildContext context) {
@@ -114,10 +114,10 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
                 height: (MediaQuery.of(context).size.height - 50) / 8 * 7,
               ),
               onTap: () {
-                _picData(currentPlaceNumber);
+                _picData(currentPlaceNumber!);
               },
               onDoubleTap: () {
-                onLikeButtonTapped(likeButton.isLiked);
+                onLikeButtonTapped(likeButton!.isLiked!);
               },
             ),
             flex: 7,
@@ -135,7 +135,7 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: new Text(
-                        placesList[currentPlaceNumber].name,
+                        placesList![currentPlaceNumber!].name,
                         style: TextStyle(fontSize: 30.0, color: Colors.white),
                         textAlign: TextAlign.center,
                       ),
@@ -155,7 +155,7 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
       ),
       decoration: BoxDecoration(
           image: DecorationImage(
-              image: placesList[currentPlaceNumber].pictures[currentPictureId],
+              image: placesList![currentPlaceNumber!].pictures[currentPictureId!],
               fit: BoxFit.cover),
           color: Colors.white),
     );
@@ -163,7 +163,7 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
 
   Future<bool> onLikeButtonTapped(bool isLiked) async {
     setState(() {
-      placesList.elementAt(currentPlaceNumber).likePlace(loggedInUser);
+      placesList!.elementAt(currentPlaceNumber!).likePlace(loggedInUser);
       likeRefresh = true;
     });
     return !isLiked;
@@ -171,11 +171,11 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
 
   Widget _likeButton() {
     likeButton = new LikeButton(
-      isLiked: placesList
-          .elementAt(currentPlaceNumber)
+      isLiked: placesList!
+          .elementAt(currentPlaceNumber!)
           .usersLiked
           .contains(loggedInUser.uid),
-      likeCount: placesList[currentPlaceNumber].likeNumber(),
+      likeCount: placesList![currentPlaceNumber!].likeNumber(),
       size: 30.0,
       circleColor:
           CircleColor(start: Color(0xFFF44336), end: Color(0xFFF44336)),
@@ -190,7 +190,7 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
           size: 30.0,
         );
       },
-      countBuilder: (int count, bool isLiked, String text) {
+      countBuilder: (int? count, bool isLiked, String text) {
         var color = isLiked ? Colors.red : Colors.grey;
         Widget result;
         if (count == 0) {
@@ -200,14 +200,14 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
           );
         } else
           result = Text(
-            placesList[currentPlaceNumber].likeNumber().toString(),
+            placesList![currentPlaceNumber!].likeNumber().toString(),
             style: TextStyle(color: color),
           );
         return result;
       },
       onTap: onLikeButtonTapped,
     );
-    return likeButton;
+    return likeButton!;
   }
 
   Future<bool> onAllLikeButtonTapped(bool isLiked) async {
@@ -236,7 +236,7 @@ class _OnePictureWidgetState extends State<OnePictureWidget> {
       },
       onTap: onAllLikeButtonTapped,
     );
-    return likeButton;
+    return likeButton!;
   }
 
   void _picData(int currentPlaceNumber) {

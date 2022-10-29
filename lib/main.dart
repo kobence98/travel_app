@@ -6,8 +6,8 @@ import 'package:travel_app/api/userController.dart';
 import 'package:travel_app/widgets/auth/loginWidget.dart';
 
 final UserController userController = UserController();
-User loggedInUser;
-LocationData currentLocation;
+late User loggedInUser;
+LocationData? currentLocation;
 
 Future<void> main() async {
 

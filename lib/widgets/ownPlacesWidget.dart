@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:travel_app/api/placesController.dart';
 import 'package:travel_app/entities/place.dart';
 
-List<Place> ownPlaces;
+List<Place>? ownPlaces;
 
 class OwnPlacesWidget extends StatefulWidget {
   @override
@@ -43,7 +43,7 @@ class _OwnPlacesWidgetState extends State<OwnPlacesWidget> {
                 Flexible(
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: ownPlaces.length,
+                    itemCount: ownPlaces!.length,
                     itemBuilder: (BuildContext context, int index) {
                       return ListTile(
                         leading: IconButton(
@@ -52,7 +52,7 @@ class _OwnPlacesWidgetState extends State<OwnPlacesWidget> {
                             onDelete(index);
                           },
                         ),
-                        title: Text(ownPlaces.elementAt(index).name),
+                        title: Text(ownPlaces!.elementAt(index).name),
                       );
                     },
                   ),
@@ -83,9 +83,9 @@ class _OwnPlacesWidgetState extends State<OwnPlacesWidget> {
                   child: Text('Igen!'),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    ownPlaces.elementAt(index).id.remove().whenComplete(() {
+                    ownPlaces!.elementAt(index).id!.remove().whenComplete(() {
                       FirebaseStorage.instance
-                          .ref(ownPlaces.elementAt(index).id.path)
+                          .ref(ownPlaces!.elementAt(index).id!.path)
                           .listAll()
                           .asStream()
                           .forEach((element) {
@@ -94,7 +94,7 @@ class _OwnPlacesWidgetState extends State<OwnPlacesWidget> {
                         });
                       }).whenComplete(() {
                         thisWidget.setState(() {
-                          ownPlaces.removeAt(index);
+                          ownPlaces!.removeAt(index);
                         });
                       });
                     });

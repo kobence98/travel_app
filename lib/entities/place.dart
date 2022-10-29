@@ -9,7 +9,7 @@ import 'package:gpx/gpx.dart';
 import 'package:travel_app/api/placesController.dart';
 
 class Place {
-  DatabaseReference id;
+  DatabaseReference ?id;
   String creatorUId;
   String name;
   Set usersLiked = {};
@@ -23,7 +23,7 @@ class Place {
   int minutes;
   int levelDiffUp;
   int levelDiffDown;
-  String kirtippekLink;
+  String ?kirtippekLink;
 
   Place(this.name, this.picNumber, this.xCoordinate, this.yCoordinate,
       this.creatorUId, this.length, this.hours, this.minutes, this.levelDiffUp, this.levelDiffDown, this.kirtippekLink);
@@ -63,13 +63,13 @@ class Place {
   }
 
   void update() {
-    updatePlace(this, this.id);
+    updatePlace(this, this.id!);
   }
 
   Future<void> setPictures() async {
     for (int i = 0; i < picNumber; i++) {
       await FirebaseStorage.instance
-          .ref(id.path + '/' + i.toString() + '.jpg')
+          .ref(id!.path + '/' + i.toString() + '.jpg')
           .getDownloadURL()
           .then((path) => pictures.add(CachedNetworkImageProvider(path)));
 
@@ -78,11 +78,11 @@ class Place {
 
   Future<void> setGPX() async {
     Reference ref =
-        FirebaseStorage.instance.ref('/' + id.path).child('place.gpx');
+        FirebaseStorage.instance.ref('/' + id!.path).child('place.gpx');
     await ref.getData().then((downloadedData) {
-      Gpx file = GpxReader().fromString(utf8.decode(downloadedData));
+      Gpx file = GpxReader().fromString(utf8.decode(downloadedData!));
       file.trks.first.trksegs.first.trkpts.forEach((point) {
-        coordinateList.add(LatLng(point.lat, point.lon));
+        coordinateList.add(LatLng(point.lat!, point.lon!));
       });
     });
   }

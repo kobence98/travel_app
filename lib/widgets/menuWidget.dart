@@ -15,9 +15,9 @@ class MenuWidget extends StatefulWidget {
 }
 
 class _MenuWidgetState extends State<MenuWidget> {
-  RangeValues radiusSliderValue;
-  RangeValues lengthSliderValue;
-  RangeValues timeSliderValue;
+  late RangeValues radiusSliderValue;
+  late RangeValues lengthSliderValue;
+  late RangeValues timeSliderValue;
   TextEditingController nameController = TextEditingController();
 
   @override
@@ -29,13 +29,13 @@ class _MenuWidgetState extends State<MenuWidget> {
   Widget build(BuildContext context) {
     if (maxRadius != null)
       radiusSliderValue =
-          RangeValues(minRadius.toDouble(), maxRadius.toDouble());
+          RangeValues(minRadius!.toDouble(), maxRadius!.toDouble());
     if (maxLength != null)
       lengthSliderValue =
-          RangeValues(minLength.toDouble(), maxLength.toDouble());
+          RangeValues(minLength!.toDouble(), maxLength!.toDouble());
     if (maxTime != null)
-      timeSliderValue = RangeValues(minTime.toDouble(), maxTime.toDouble());
-    if (placesList.isEmpty) {
+      timeSliderValue = RangeValues(minTime!.toDouble(), maxTime!.toDouble());
+    if (placesList!.isEmpty) {
       Fluttertoast.showToast(
           msg:
               "Nem található egyetlen hely sem a körzetedben, állíts a filtereken!",
@@ -241,15 +241,15 @@ class _MenuWidgetState extends State<MenuWidget> {
   void onFiltersPressed() {
     mainWidget.setState(() {
       maxRadius =
-          radiusSliderValue == null ? null : radiusSliderValue.end.round();
+          radiusSliderValue.end.round();
       maxLength =
-          lengthSliderValue == null ? null : lengthSliderValue.end.round();
-      maxTime = timeSliderValue == null ? null : timeSliderValue.end.round();
+          lengthSliderValue.end.round();
+      maxTime = timeSliderValue.end.round();
       minRadius =
-          radiusSliderValue == null ? null : radiusSliderValue.start.round();
+          radiusSliderValue.start.round();
       minLength =
-          lengthSliderValue == null ? null : lengthSliderValue.start.round();
-      minTime = timeSliderValue == null ? null : timeSliderValue.start.round();
+          lengthSliderValue.start.round();
+      minTime = timeSliderValue.start.round();
     });
   }
 

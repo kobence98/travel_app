@@ -65,15 +65,15 @@ class _ForgetPasswordWidgetState extends State<ForgetPasswordWidget> {
                   child: ButtonTheme(
                     height: 50,
                     minWidth: 300,
-                    child: RaisedButton(
+                    child: ElevatedButton(
                       onPressed: onEmailPressed,
                       child: Text(
                         "Email küldése",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20),
                       ),
-                      color: Colors.white,
                     ),
+                    buttonColor: Colors.white,
                   ),
                 ),
               ],

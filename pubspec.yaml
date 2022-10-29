@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 8.0.0
+version: 9.0.0
 
 environment:
   sdk: ">=2.17.0-0 <3.0.0"
@@ -29,7 +29,6 @@ dependencies:
   cloud_firestore: ^3.1.17
 
   cached_network_image: ^3.2.1
-  popup_menu: ^1.0.5
   map_launcher: ^2.2.3
   flutter_svg: ^1.1.0
   weather: ^2.0.1

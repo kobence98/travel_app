@@ -3,12 +3,12 @@ import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gpx/gpx.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:popup_menu/popup_menu.dart' as popupMenu;
 import 'package:travel_app/api/placesController.dart';
 import 'package:travel_app/entities/place.dart';
 import 'package:travel_app/main.dart';
@@ -23,10 +23,10 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
   final nameController = TextEditingController();
   final hoursController = TextEditingController();
   final minutesController = TextEditingController();
-  List<Image> imagesList;
-  List<File> imageFilesList;
-  File file;
-  int selectedItem;
+  late List<Image> imagesList;
+  late List<File> imageFilesList;
+  late File file;
+  late int selectedItem;
   List<GlobalKey> btnKeys = [];
 
   @override
@@ -117,22 +117,11 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
                 padding: EdgeInsets.all(10),
                 height: 200,
                 alignment: Alignment.centerLeft,
-                child: InkWell(
+                child: GestureDetector(
                   child: imagesList.elementAt(index - 4),
                   key: btnKeys.elementAt(index - 4),
-                  onLongPress: () {
-                    selectedItem = index - 4;
-                    popupMenu.PopupMenu.context = context;
-                    popupMenu.PopupMenu menu = popupMenu.PopupMenu(
-                      items: [
-                        popupMenu.MenuItem(
-                            title: 'Törlés',
-                            textStyle:
-                                TextStyle(fontSize: 20, color: Colors.white)),
-                      ],
-                      onClickMenu: onDeletePress,
-                    );
-                    menu.show(widgetKey: btnKeys.elementAt(selectedItem));
+                  onTertiaryLongPressDown: (LongPressDownDetails details) {
+                    _showPopupMenu(details.globalPosition, index - 4);
                   },
                 ),
               );
@@ -155,15 +144,36 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
     );
   }
 
+  _showPopupMenu(Offset offset, int selectedItemIndex) async {
+    double left = offset.dx;
+    double top = offset.dy;
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(left, top, 0, 0),
+      items: [
+        PopupMenuItem(
+          value: 1,
+          child: Text(
+            "Törlés",
+            style: TextStyle(fontSize: 20, color: Colors.white),
+          ),
+          onTap: () {
+            onDeletePress(selectedItemIndex);
+          },
+        ),
+      ],
+    );
+  }
+
   Future<void> addPicture() async {
     final ImagePicker _imagePicker = ImagePicker();
-    XFile _image = await _imagePicker.pickImage(
+    XFile? _image = await _imagePicker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 0,
     );
 
     setState(() {
-      if (_image.path.endsWith('.jpg')) {
+      if (_image!.path.endsWith('.jpg')) {
         imageFilesList.add(File(_image.path));
         imagesList.add(Image.file(
           File(_image.path),
@@ -184,7 +194,11 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
   }
 
   Future<void> addFile() async {
-    File selectedFile = (await FilePicker.platform.pickFiles(allowMultiple: false)).paths.map((path) => File(path)).first;
+    File selectedFile =
+        (await FilePicker.platform.pickFiles(allowMultiple: false))!
+            .paths
+            .map((path) => File(path!))
+            .first;
     setState(() {
       if (selectedFile.path.endsWith('.gpx'))
         file = selectedFile;
@@ -221,13 +235,13 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
       double innerLength = countParams.first;
       int up = countParams[1].round();
       int down = countParams[2].round();
-      double x = gpxFile.trks.first.trksegs.first.trkpts.first.lat;
-      double y = gpxFile.trks.first.trksegs.first.trkpts.first.lon;
+      double? x = gpxFile.trks.first.trksegs.first.trkpts.first.lat;
+      double? y = gpxFile.trks.first.trksegs.first.trkpts.first.lon;
       Place place = new Place(
         nameController.text,
         imagesList.length,
-        x,
-        y,
+        x!,
+        y!,
         loggedInUser.uid,
         innerLength,
         int.parse(hoursController.text),
@@ -238,7 +252,7 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
       );
       place.setId(savePlace(place));
 
-      var dbRef = FirebaseStorage.instance.ref(place.id.path + '/');
+      var dbRef = FirebaseStorage.instance.ref(place.id!.path + '/');
       for (int i = 0; i < imageFilesList.length; i++) {
         File image = imageFilesList.elementAt(i);
         await dbRef.child(i.toString() + '.jpg').putFile(image);
@@ -258,10 +272,10 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
     super.dispose();
   }
 
-  void onDeletePress(popupMenu.MenuItemProvider provider) {
+  void onDeletePress(int selectedItemIndex) {
     setState(() {
-      imageFilesList.removeAt(selectedItem);
-      imagesList.removeAt(selectedItem);
+      imageFilesList.removeAt(selectedItemIndex);
+      imagesList.removeAt(selectedItemIndex);
     });
   }
 
@@ -274,9 +288,9 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
       if (i < gpx.trks.first.trksegs.first.trkpts.length - 1) {
         var element = gpx.trks.first.trksegs.first.trkpts.elementAt(i);
         var next = gpx.trks.first.trksegs.first.trkpts.elementAt(i + 1);
-        innerLength += distance(element.lat, next.lat, element.lon, next.lon,
-            element.ele, next.ele);
-        double diff = next.ele - element.ele;
+        innerLength += distance(element.lat!, next.lat!, element.lon!,
+            next.lon!, element.ele!, next.ele!);
+        double diff = next.ele! - element.ele!;
         if (diff < 0) {
           down += diff;
         } else {
@@ -302,12 +316,12 @@ class _AddPlaceWidgetState extends State<AddPlaceWidget> {
             sin(lonDistance / 2) *
             sin(lonDistance / 2);
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    double distance = R * c * 1000; // convert to meters
+    double? distance = R * c * 1000; // convert to meters
 
     double height = el1 - el2;
 
-    distance = pow(distance, 2) + pow(height, 2);
+    distance = (pow(distance, 2) + pow(height, 2)) as double?;
 
-    return sqrt(distance);
+    return sqrt(distance!);
   }
 }

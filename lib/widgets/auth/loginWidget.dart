@@ -9,7 +9,7 @@ import '../mainWidget.dart';
 import 'forgetPasswordTap.dart';
 import 'registrationWidget.dart';
 
-List<Place> placesList;
+List<Place>? placesList;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       );
     } else {
       return Scaffold(
-        body: StreamBuilder<User>(
+        body: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (BuildContext context, snapshot) {
             if (!snapshot.hasData) {
@@ -107,15 +107,16 @@ class _LoginPageState extends State<LoginPage> {
                           child: ButtonTheme(
                             height: 50,
                             minWidth: 300,
-                            child: RaisedButton(
+                            child: ElevatedButton(
                               onPressed: onLoginPressed,
                               child: Text(
                                 "Bejelentkezés",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 20),
                               ),
-                              color: Colors.white,
+
                             ),
+                            buttonColor: Colors.white,
                           ),
                         ),
                         SizedBox(height: 10),
@@ -123,15 +124,15 @@ class _LoginPageState extends State<LoginPage> {
                           child: ButtonTheme(
                             height: 50,
                             minWidth: 300,
-                            child: RaisedButton(
+                            child: ElevatedButton(
                               onPressed: onRegistrationPressed,
                               child: Text(
                                 "Regisztráció",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 20),
                               ),
-                              color: Colors.white,
                             ),
+                            buttonColor: Colors.white,
                           ),
                         ),
                         SizedBox(height: 10),
@@ -150,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               );
             } else {
-              loggedInUser = snapshot.data;
+              loggedInUser = snapshot.data!;
               return MainWidget();
             }
           },

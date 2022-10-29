@@ -124,7 +124,7 @@ class _ChangePassWidgetState extends State<ChangePassWidget> {
       }
       else {
         try {
-          FirebaseAuth.instance.currentUser
+          FirebaseAuth.instance.currentUser!
               .updatePassword(passwordController.text).whenComplete(() {
               Navigator.of(context).pop();
               Fluttertoast.showToast(
@@ -159,7 +159,7 @@ class _ChangePassWidgetState extends State<ChangePassWidget> {
           }
           else{
             Fluttertoast.showToast(
-                msg: e.message,
+                msg: e.message!,
                 toastLength: Toast.LENGTH_LONG,
                 gravity: ToastGravity.CENTER,
                 timeInSecForIosWeb: 2,

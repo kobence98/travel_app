@@ -9,7 +9,7 @@ class UserController {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) {
-        value.user.sendEmailVerification();
+        value.user!.sendEmailVerification();
         FirebaseAuth.instance.signOut();
       });
       return true;
@@ -36,7 +36,7 @@ class UserController {
       return false;
     } catch (e) {
       Fluttertoast.showToast(
-          msg: e.code,
+          msg: e.toString(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 2,
@@ -52,7 +52,7 @@ class UserController {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(
           email: email.replaceAll(" ", ""), password: password)
-          .then((userData) => loggedInUser = userData.user);
+          .then((userData) => loggedInUser = userData.user!);
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -86,7 +86,7 @@ class UserController {
       return false;
     } catch (e) {
       Fluttertoast.showToast(
-          msg: e.code,
+          msg: e.toString(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 2,
