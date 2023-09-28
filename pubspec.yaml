@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 9.0.0
+version: 10.0.0
 
 environment:
   sdk: ">=2.17.0-0 <3.0.0"
@@ -57,12 +57,12 @@ dev_dependencies:
 
 flutter:
   assets:
-    - assets/menu_cover.jpg
-    - assets/main_cover.gif
-    - assets/registration_cover.gif
-    - assets/forget_pass_cover.gif
-    - assets/loading.gif
-    - assets/change_pass_cover.gif
+    - assets/images/menu_cover.jpg
+    - assets/images/main_cover.gif
+    - assets/images/registration_cover.gif
+    - assets/images/forget_pass_cover.gif
+    - assets/images/loading.gif
+    - assets/images/change_pass_cover.gif
 
   uses-material-design: true
 
